@@ -43,17 +43,14 @@ class PrintDisplay(baseslide.BaseSlide):
 
     self.data = pyjson
 
-    # we've just done the conversion of the data; next comes the
-    # fun part, making it all work with clutter.
+    # the data has been converted and put into an object...
 
 
-  def addrss(self, feedURL):
-    """ Adds the RSS feed information to this slide. """
-    #TODO: ERROR CHECKING: MAKE SURE WE DON'T EXPLODE WITH A BAD FEED
-    rssfeed = feedparser.parse(feedURL)
-    feedtitle = remove_html_tags(rssfeed.feed.title)
+  def makeslide(self):
+    """ Adds the json print feed information to this slide. """
+    title = "Print Queue for " + data["status"][0]["name"]
     feedtitleActor = clutter.Text()
-    feedtitleActor.set_text(feedtitle)
+    feedtitleActor.set_text(title)
     feedtitleActor.set_font_name("serif 71")
     feedtitleActor.set_color(clutter.color_from_string("gold"))
     feedtitleActor.set_size(1920, 100)
