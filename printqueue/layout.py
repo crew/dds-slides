@@ -45,7 +45,6 @@ class PrintDisplay(baseslide.BaseSlide):
 
     # the data has been converted and put into an object...
 
-
   def makeslide(self):
     """ Adds the json print feed information to this slide. """
     title = "Print Queue for " + data["status"][0]["name"]
@@ -53,7 +52,7 @@ class PrintDisplay(baseslide.BaseSlide):
     feedtitleActor.set_text(title)
     feedtitleActor.set_font_name("serif 71")
     feedtitleActor.set_color(clutter.color_from_string("gold"))
-    feedtitleActor.set_size(1920, 100)
+    feedtitleActor.set_size(1280, 100)
     feedtitleActor.set_position(0, 0)
     self.group.add(feedtitleActor) 
 
