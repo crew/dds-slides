@@ -33,8 +33,8 @@ class PrintDisplay(baseslide.BaseSlide):
 
   def parsedata(self, url):
     """ Parse data from the given URL, and populate data objects
-        with that data. """
-    # use urllib to grab data from the url we're given
+        with that data. """ 
+   # use urllib to grab data from the url we're given
     webjson = urllib.urlopen(url)
     fdata = webjson.read() # the raw JSON from the printserver
     
@@ -57,7 +57,7 @@ class PrintDisplay(baseslide.BaseSlide):
     self.group.add(feedtitleActor) 
 
     y = 100
-    for entry in rssfeed.entries:
+    for entry in data:
       if y >= 1080:
         break
       y += self.add_entry_group(entry, y, width=1920) + 20
