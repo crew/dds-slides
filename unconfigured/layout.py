@@ -28,6 +28,10 @@ class Unconfigured(baseslide.BaseSlide):
         message.set_size(1920, 30)
         message.set_position(0, 120)
         self.group.add(message)
+
+        pic = clutter.Texture('lolcat_error.jpg')
+        pic.set_position(640,500)
+        self.group.add(pic)
         
     
 app = Unconfigured()
