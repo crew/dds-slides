@@ -101,7 +101,7 @@ if __name__ == '__main__':
 
 # Put the ClutterGroup containing all the slide information
 # in the top level, so that DDS can get at it.
-app = RSSDisplay("http://rss.slashdot.org/Slashdot/slashdot")
+app = RSSDisplay("http://www.gonu.com/mhockey/news.xml")
 #app = RSSDisplay("http://feeds.digg.com/digg/popular.rss")
 
 slide = app.group
