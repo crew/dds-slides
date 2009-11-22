@@ -98,7 +98,7 @@ class PrintDisplay(baseslide.BaseSlide):
 
     # paste the status rectangle in using the correct height from the
     # title text.
-    statusrect.set_size(SCREEN_WIDTH - 160, title.get_height())
+    statusrect.set_size(SCREEN_WIDTH - 160, title.get_height() + 10)
     self.group.add(statusrect)
     # now add the title in, so it come in above the status rectangle
     self.group.add(title)
