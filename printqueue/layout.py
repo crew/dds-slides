@@ -80,11 +80,23 @@ class PrintDisplay(baseslide.BaseSlide):
     content.set_line_wrap(True)
     content.set_line_wrap_mode(2)
     content.set_color(clutter.color_from_string("white"))
-    content.set_position(150, starty)
+    content.set_position(100, starty)
     content.set_width(width)
     content_height = content.get_height()
     content.set_ellipsize(3) #Omit characters at the end of the text
     self.group.add(content)
+
+    jobtitle = clutter.Text()
+    jobtitle.set_text(entry["title"])
+    jobtitle.set_font_name("serif 16")
+    jobtitle.set_line_wrap(True)
+    jobtitle.set_line_wrap_mode(2)
+    jobtitle.set_color(clutter.color_from_string("white"))
+    jobtitle.set_position(200, starty)
+    jobtitle.set_width(width)
+    jobtitle_height = jobtitle.get_height()
+    jobtitle.set_ellipsize(3) #Omit characters at the end of the text
+    self.group.add(jobtitle)
 
     status = clutter.Text()
     status.set_text(entry["state"])
@@ -94,13 +106,29 @@ class PrintDisplay(baseslide.BaseSlide):
     if entry["state"] == "completed":
       status.set_color(clutter.color_from_string("green"))
     else:
-      status.set_color(clutter.color_from_string("orange"))
-    
-    status.set_position(250, starty)
+      status.set_color(clutter.color_from_string("orange"))    
+    status.set_position(400, starty)
     status.set_width(width)
     status_height = status.get_height()
     status.set_ellipsize(3) #Omit characters at the end of the text
     self.group.add(status)
+
+    
+    destination = clutter.Text()
+    destination.set_text(entry["physicaldest"])
+    destination.set_font_name("serif 16")
+    destination.set_line_wrap(True)
+    destination.set_line_wrap_mode(2)
+    if entry["physicaldest"] == "dali":
+      destination.set_color(clutter.color_from_string("blue"))
+    else:
+      destination.set_color(clutter.color_from_string("red"))
+    destination.set_position(475, starty)
+    destination.set_width(width)
+    destination_height = destination.get_height()
+    destination.set_ellipsize(3) #Omit characters at the end of the text
+    self.group.add(destination)
+
 
     # Both items are oriented at the same height; only use the title height here
 
