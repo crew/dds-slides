@@ -79,20 +79,33 @@ class PrintDisplay(baseslide.BaseSlide):
 
   def add_entry_group(self, entry, starty, width=1280):
     title = clutter.Text()
-    title.set_font_name("serif 18")
+    title.set_font_name("serif 24")
     title.set_text(entry["id"].__str__())
     title.set_width(width)
     title.set_color(clutter.color_from_string("black"))
-    title.set_position(25, starty)
+    title.set_position(100, starty)
     self.group.add(title)
+
+    # Add a rectangle that wraps the text indicating the status of
+    # the given job
+    statusrect = clutter.Rectangle()
+    if entry["state"] == "completed":
+      statusrect.set_color(clutter.color_from_string("green"))
+    elif entry["state"] == "processing":
+      statusrect.set_color(clutter.color_from_string("orange"))
+    else: #probably the title bar, no color needed
+      statusrect.set_color(clutter.color_from_string("white"))
+    statusrect.set_position(80, starty - 5)
+    statusrect.set_size(SCREEN_WIDTH - 160, title.get_height())
+    self.group.add(statusrect)
 
     content = clutter.Text()
     content.set_text(entry["owner"])
-    content.set_font_name("serif 18")
+    content.set_font_name("serif 24")
     content.set_line_wrap(True)
     content.set_line_wrap_mode(2)
     content.set_color(clutter.color_from_string("black"))
-    content.set_position(100, starty)
+    content.set_position(175, starty)
     content.set_width(width)
     content_height = content.get_height()
     content.set_ellipsize(3) 
@@ -100,11 +113,11 @@ class PrintDisplay(baseslide.BaseSlide):
 
     jobtitle = clutter.Text()
     jobtitle.set_text(entry["title"])
-    jobtitle.set_font_name("serif 18")
+    jobtitle.set_font_name("serif 24")
     jobtitle.set_line_wrap(True)
     jobtitle.set_line_wrap_mode(2)
     jobtitle.set_color(clutter.color_from_string("black"))
-    jobtitle.set_position(200, starty)
+    jobtitle.set_position(300, starty)
     jobtitle.set_width(width)
     jobtitle_height = jobtitle.get_height()
     jobtitle.set_ellipsize(3) #Omit characters at the end of the text
@@ -112,16 +125,11 @@ class PrintDisplay(baseslide.BaseSlide):
 
     status = clutter.Text()
     status.set_text(entry["state"])
-    status.set_font_name("serif 18")
+    status.set_font_name("serif 24")
     status.set_line_wrap(True)
     status.set_line_wrap_mode(2)
-    if entry["state"] == "completed":
-      status.set_color(clutter.color_from_string("green"))
-    elif entry["state"] == "Status":
-      status.set_color(clutter.color_from_string("black"))
-    else:
-      status.set_color(clutter.color_from_string("orange"))    
-    status.set_position(350, starty)
+    status.set_color(clutter.color_from_string("black"))
+    status.set_position(500, starty)
     status.set_width(width)
     status_height = status.get_height()
     status.set_ellipsize(3) #Omit characters at the end of the text
@@ -130,7 +138,7 @@ class PrintDisplay(baseslide.BaseSlide):
     
     destination = clutter.Text()
     destination.set_text(entry["physicaldest"])
-    destination.set_font_name("serif 18")
+    destination.set_font_name("serif 24")
     destination.set_line_wrap(True)
     destination.set_line_wrap_mode(2)
     if entry["physicaldest"] == "dali":
@@ -139,7 +147,7 @@ class PrintDisplay(baseslide.BaseSlide):
       destination.set_color(clutter.color_from_string("black"))
     else:
       destination.set_color(clutter.color_from_string("red"))
-    destination.set_position(450, starty)
+    destination.set_position(650, starty)
     destination.set_width(width)
     destination_height = destination.get_height()
     destination.set_ellipsize(3) #Omit characters at the end of the text
