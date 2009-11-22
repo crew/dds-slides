@@ -35,7 +35,7 @@ class PrintDisplay(baseslide.BaseSlide):
   def parsedata(self, url):
     """ Parse data from the given URL, and populate data objects
         with that data. """ 
-   # use urllib to grab data from the url we're given
+    # use urllib to grab data from the url we're given
     webjson = urllib.urlopen(url)
     fdata = webjson.read() # the raw JSON from the printserver
     
@@ -48,16 +48,29 @@ class PrintDisplay(baseslide.BaseSlide):
 
   def makeslide(self):
     """ Adds the json print feed information to this slide. """
-    title = "Print Queue for " + self.data["status"][0]["name"]
+
+    # Make a white rectangle to give the slide a white background
+    # (our current preferred solution
+    background = clutter.Rectangle()
+    background.set_color(clutter.color_from_string("white"))
+    background.set_size(SCREEN_WIDTH, SCREEN_HEIGHT)
+    background.set_position(0, 0)
+    self.group.add(background)
+
+    title = "Print Queue for " + self.data["status"][2]["name"]
     feedtitleActor = clutter.Text()
     feedtitleActor.set_text(title)
     feedtitleActor.set_font_name("serif 62")
-    feedtitleActor.set_color(clutter.color_from_string("white"))
+    feedtitleActor.set_color(clutter.color_from_string("black"))
     feedtitleActor.set_size(SCREEN_WIDTH, 100)
     feedtitleActor.set_position(0, 0)
     self.group.add(feedtitleActor) 
-
+    
+    headers = {"id":"Job ID", "owner":"Owner", "title":"Title",
+               "state":"Status", "physicaldest":"Printer"}
+    
     y = 100
+    y += self.add_entry_group(headers, y, width=SCREEN_WIDTH) + 10
     for entry in self.data["jobs"]:
       if y >= SCREEN_HEIGHT:
         break
@@ -66,32 +79,31 @@ class PrintDisplay(baseslide.BaseSlide):
 
   def add_entry_group(self, entry, starty, width=1280):
     title = clutter.Text()
-    title.set_font_name("serif 16")
+    title.set_font_name("serif 18")
     title.set_text(entry["id"].__str__())
-    title.set_markup('<span underline="single">%s</span>' % entry["id"])
     title.set_width(width)
-    title.set_color(clutter.color_from_string("white"))
+    title.set_color(clutter.color_from_string("black"))
     title.set_position(25, starty)
     self.group.add(title)
 
     content = clutter.Text()
     content.set_text(entry["owner"])
-    content.set_font_name("serif 16")
+    content.set_font_name("serif 18")
     content.set_line_wrap(True)
     content.set_line_wrap_mode(2)
-    content.set_color(clutter.color_from_string("white"))
+    content.set_color(clutter.color_from_string("black"))
     content.set_position(100, starty)
     content.set_width(width)
     content_height = content.get_height()
-    content.set_ellipsize(3) #Omit characters at the end of the text
+    content.set_ellipsize(3) 
     self.group.add(content)
 
     jobtitle = clutter.Text()
     jobtitle.set_text(entry["title"])
-    jobtitle.set_font_name("serif 16")
+    jobtitle.set_font_name("serif 18")
     jobtitle.set_line_wrap(True)
     jobtitle.set_line_wrap_mode(2)
-    jobtitle.set_color(clutter.color_from_string("white"))
+    jobtitle.set_color(clutter.color_from_string("black"))
     jobtitle.set_position(200, starty)
     jobtitle.set_width(width)
     jobtitle_height = jobtitle.get_height()
@@ -100,14 +112,16 @@ class PrintDisplay(baseslide.BaseSlide):
 
     status = clutter.Text()
     status.set_text(entry["state"])
-    status.set_font_name("serif 16")
+    status.set_font_name("serif 18")
     status.set_line_wrap(True)
     status.set_line_wrap_mode(2)
     if entry["state"] == "completed":
       status.set_color(clutter.color_from_string("green"))
+    elif entry["state"] == "Status":
+      status.set_color(clutter.color_from_string("black"))
     else:
       status.set_color(clutter.color_from_string("orange"))    
-    status.set_position(400, starty)
+    status.set_position(350, starty)
     status.set_width(width)
     status_height = status.get_height()
     status.set_ellipsize(3) #Omit characters at the end of the text
@@ -116,21 +130,25 @@ class PrintDisplay(baseslide.BaseSlide):
     
     destination = clutter.Text()
     destination.set_text(entry["physicaldest"])
-    destination.set_font_name("serif 16")
+    destination.set_font_name("serif 18")
     destination.set_line_wrap(True)
     destination.set_line_wrap_mode(2)
     if entry["physicaldest"] == "dali":
       destination.set_color(clutter.color_from_string("blue"))
+    elif entry["physicaldest"] == "Printer":
+      destination.set_color(clutter.color_from_string("black"))
     else:
       destination.set_color(clutter.color_from_string("red"))
-    destination.set_position(475, starty)
+    destination.set_position(450, starty)
     destination.set_width(width)
     destination_height = destination.get_height()
     destination.set_ellipsize(3) #Omit characters at the end of the text
     self.group.add(destination)
 
 
-    # Both items are oriented at the same height; only use the title height here
+
+    # Both items are oriented at the same height; 
+    # only use the title height here
 
     return title.get_height()
 
