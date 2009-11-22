@@ -93,7 +93,7 @@ def remove_html_tags(data):
   return unescape(p.sub('', data))
 
 def main(args=None):
-  app = RSSDisplay("http://rss.slashdot.org/Slashdot/slashdot")
+  app = RSSDisplay("http://www.gonu.com/mhockey/news.xml")
   return 0
 
 if __name__ == '__main__':
