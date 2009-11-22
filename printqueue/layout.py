@@ -78,14 +78,6 @@ class PrintDisplay(baseslide.BaseSlide):
 
 
   def add_entry_group(self, entry, starty, width=1280):
-    title = clutter.Text()
-    title.set_font_name("serif 24")
-    title.set_text(entry["id"].__str__())
-    title.set_width(width)
-    title.set_color(clutter.color_from_string("black"))
-    title.set_position(100, starty)
-    self.group.add(title)
-
     # Add a rectangle that wraps the text indicating the status of
     # the given job
     statusrect = clutter.Rectangle()
@@ -98,6 +90,14 @@ class PrintDisplay(baseslide.BaseSlide):
     statusrect.set_position(80, starty - 5)
     statusrect.set_size(SCREEN_WIDTH - 160, title.get_height())
     self.group.add(statusrect)
+
+    title = clutter.Text()
+    title.set_font_name("serif 24")
+    title.set_text(entry["id"].__str__())
+    title.set_width(width)
+    title.set_color(clutter.color_from_string("black"))
+    title.set_position(100, starty)
+    self.group.add(title)
 
     content = clutter.Text()
     content.set_text(entry["owner"])
@@ -153,11 +153,8 @@ class PrintDisplay(baseslide.BaseSlide):
     destination.set_ellipsize(3) #Omit characters at the end of the text
     self.group.add(destination)
 
-
-
     # Both items are oriented at the same height; 
     # only use the title height here
-
     return title.get_height()
 
 def addBackground(self):
