@@ -74,7 +74,7 @@ class PrintDisplay(baseslide.BaseSlide):
     for entry in self.data["jobs"]:
       if y >= SCREEN_HEIGHT:
         break
-      y += self.add_entry_group(entry, y, width=1280) + 20
+      y += self.add_entry_group(entry, y, width=1280) + 12 
 
 
   def add_entry_group(self, entry, starty, width=1280):
@@ -82,7 +82,7 @@ class PrintDisplay(baseslide.BaseSlide):
     # the given job
     statusrect = clutter.Rectangle()
     if entry["state"] == "completed":
-      statusrect.set_color(clutter.color_from_string("green"))
+      statusrect.set_color(clutter.color_from_string("#88ff77"))
     elif entry["state"] == "processing":
       statusrect.set_color(clutter.color_from_string("orange"))
     else: #probably the title bar, no color needed
