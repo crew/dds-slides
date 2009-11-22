@@ -88,8 +88,6 @@ class PrintDisplay(baseslide.BaseSlide):
     else: #probably the title bar, no color needed
       statusrect.set_color(clutter.color_from_string("white"))
     statusrect.set_position(80, starty - 5)
-    statusrect.set_size(SCREEN_WIDTH - 160, title.get_height())
-    self.group.add(statusrect)
 
     title = clutter.Text()
     title.set_font_name("serif 24")
@@ -97,6 +95,12 @@ class PrintDisplay(baseslide.BaseSlide):
     title.set_width(width)
     title.set_color(clutter.color_from_string("black"))
     title.set_position(100, starty)
+
+    # paste the status rectangle in using the correct height from the
+    # title text.
+    statusrect.set_size(SCREEN_WIDTH - 160, title.get_height())
+    self.group.add(statusrect)
+    # now add the title in, so it come in above the status rectangle
     self.group.add(title)
 
     content = clutter.Text()
