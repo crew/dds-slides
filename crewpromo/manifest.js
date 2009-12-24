@@ -1,1 +1,1 @@
-[{"priority": 1, "duration": 2, "transition": "fade", "id": 2, "mode": "layout"}, [{"url": "http://dds-master.ccs.neu.edu/media//assets/7/gettingstuffdon.jpg", "id": 7}, {"url": "http://dds-master.ccs.neu.edu/media//assets/8/layout.js", "id": 8}]]
+{"transition" : "fade", "mode" : "layout"}
