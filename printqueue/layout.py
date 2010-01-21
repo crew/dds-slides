@@ -1,7 +1,5 @@
 import clutter
-import pango
 import sys
-import cgi
 import baseslide
 import logging
 import urllib # reading json from internet
@@ -165,17 +163,6 @@ def addBackground(self):
   stageBackground = clutter.Texture('feedimage.png')
   stageBackground.set_position(0, 0)
   self.group.add(stageBackground)
-
-def unescape(s):
-  """ Replaces HTML entities with their unicode equivalent"""
-  # unescape HTML code refs; c.f. http://wiki.python.org/moin/EscapingHtml
-  return re.sub('&(%s);' % '|'.join(name2codepoint),
-            lambda m: unichr(name2codepoint[m.group(1)]), s)
-
-def remove_html_tags(data):
-  """ Removes HTML tags and unscapes the given string. """
-  p = re.compile(r'<.*?>')
-  return unescape(p.sub('', data))
 
 def main(args=None):
   app = PrintDisplay("http://queueviewer.ccs.neu.edu/printqueue/102/json/")
