@@ -26,34 +26,29 @@ class PitcamSlide(baseslide.BaseSlide):
     self.getnew()
     self.getold()
 
-  def getold(self):
+  def getcam(self, camattr, url, x, y):
     firsttime = False
-    if self.oldcam is None:
+    if camattr is None:
       firsttime = True
-    self.oldcam = self.GetTextureFromURL('http://pitcam.ccs.neu.edu/'
-                                          'old.jpeg', self.oldcam)
-    self.oldcam.set_position(940, 300)
-    self.oldcam.set_size(640,480)
-    self.oldcam.visible = True
-    self.oldcam.show()
+    camattr = self.GetTextureFromURL(url, camattr)
+    camattr.set_position(x, y)
+    camattr.set_size(640,480)
+    camattr.show()
     if firsttime:
-      self.group.add(self.oldcam)
+      self.group.add(camattr)
+
+  def getold(self):
+    self.getcam(self.oldcam,
+                'http://pitcam.ccs.neu.edu/old.jpeg',
+                940,
+                300)
     logging.info('Done fetching pitcam old')
 
   def getnew(self):
-    firsttime = False
-    if self.newcam is None:
-      firsttime = True
-
-    self.newcam = self.GetTextureFromURL('http://pitcam.ccs.neu.edu/'
-                                          'new.jpeg', self.newcam)
-    self.newcam.set_position(140, 300)
-    self.newcam.set_size(640,480)
-    self.newcam.visible = True
-    self.newcam.show()
-    if firsttime:
-      self.group.add(self.newcam)
-
+    self.getcam(self.newcam,
+                'http://pitcam.ccs.neu.edu/new.jpeg',
+                140,
+                300)
     logging.info('Done fetching pitcam new')
 
 app = PitcamSlide()
