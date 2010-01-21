@@ -7,9 +7,9 @@ class PitcamSlide(baseslide.BaseSlide):
     baseslide.BaseSlide.__init__(self)
 
     slideTitle = clutter.Text()
-    slideTitle.set_text('Pitcam, foo')
+    slideTitle.set_text('the pitcam.')
     slideTitle.set_font_name('serif 71')
-    slideTitle.set_color(clutter.color_from_string("gold"))
+    slideTitle.set_color(clutter.color_from_string("#ffffff"))
     slideTitle.set_size(1920, 100)
     slideTitle.set_position(200, 100)
     self.group.add(slideTitle)
