@@ -41,8 +41,9 @@ class SlashdotDisplay(baseslide.BaseSlide):
         y = 200
         topstorytitle = remove_html_tags(entry.title)
         title = clutter.Text()
-        title.set_font_name("sans serif 48")
+        title.set_font_name("sans serif 24")
         title.set_text(topstorytitle)
+        title.set_markup('<b>%s</b>' % topstorytitle)
         title.set_line_wrap(True)
         title.set_line_wrap_mode(2)
         title.set_width(850)
@@ -52,7 +53,7 @@ class SlashdotDisplay(baseslide.BaseSlide):
         topstorytext = remove_html_tags(entry.summary)
         content = clutter.Text()
         content.set_text(topstorytext)
-        content.set_font_name("serif 24")
+        content.set_font_name("serif 21")
         content.set_line_wrap(True)
         content.set_line_wrap_mode(2)
         content.set_color(clutter.color_from_string("black"))
@@ -70,7 +71,7 @@ class SlashdotDisplay(baseslide.BaseSlide):
   def add_entry_group(self, entry, starty):
     topstorytitle = remove_html_tags(entry.title)
     title = clutter.Text()
-    title.set_font_name("sans serif 32")
+    title.set_font_name("sans serif 18")
     title.set_text(topstorytitle)
     title.set_width(870)
     title.set_color(clutter.color_from_string("black"))
