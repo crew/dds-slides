@@ -1,19 +1,50 @@
 #!/usr/bin/python
+"""Utility for managing slides.
+
+  * Get a list of slides on the server:
+  $ ./slidetool.py list
+
+  * Generate a bundle for a given slide directory
+  $ ./slidetool.py bundle slidedirectory
+
+  * Generate bundles for all slide directories
+  $ ./slidetool.py allbundle
+
+  * Upload a new slide
+  $ ./slidetool.py upload bundle.tar.gz
+
+  * Update a pre-existing slide id #5
+  $ ./slidetool.py update 5 bundle.tar.gz
+
+*******************************************************************
+NOTE! You can run $ ./slidetool.py --help to get other option help.
+
+"""
+
+__author__ = 'Will Nowak <wan@ccs.neu.edu'
+
+import os
+import sys
+import gflags
+
 import cookielib
 import urllib2
 import urllib
 import getpass
-import gflags
-import sys
-import os
 import mimetypes
 import time
+
+import tarfile
+from glob import glob
+import logging
+import json
 
 gflags.DEFINE_string('authcookiefile', '~/.dds/authcookies.dat',
                      'Path to authcookiefile')
 gflags.DEFINE_string('baseurl', 'http://dds-master.ccs.neu.edu/dds/',
                      'DDS Server Base URL')
 FLAGS = gflags.FLAGS
+logging.basicConfig(level=logging.INFO)
 
 
 class AuthedActivity(object):
@@ -122,13 +153,25 @@ class AuthedActivity(object):
     finally:
       self.cookiejar.save()
 
+  def get_slide_listing(self):
+    d = self.geturl(os.path.join(FLAGS.baseurl, 'cli', 'list_slides/'))
+    sl =  json.load(d)
+    o = []
+    keys = ['title', 'id', 'owner']
+    o.append(keys)
+    o.append(('*****', '**', '*****'))
+    for x in sl:
+      r = []
+      for y in keys:
+        r.append(x[y])
+      o.append(r)
+    return o
+
   def create_slide(self, bundlepath):
     content = open(bundlepath).read()
     fields = [('mode', 'create')]
     files = [('bundle', 'bundle.tar.gz', content)]
-    posturl = os.path.join(FLAGS.baseurl, 'cli', 'manage_slide')
-    if posturl[-1] != '/':
-      posturl += '/'
+    posturl = os.path.join(FLAGS.baseurl, 'cli', 'manage_slide/')
     try:
       return self.post_multipart(posturl, fields, files)
     except urllib2.HTTPError, e:
@@ -139,9 +182,7 @@ class AuthedActivity(object):
     content = open(bundlepath).read()
     fields = [('mode', 'update'), ('id', str(id))]
     files = [('bundle', 'bundle.tar.gz', content)]
-    posturl = os.path.join(FLAGS.baseurl, 'cli', 'manage_slide')
-    if posturl[-1] != '/':
-      posturl += '/'
+    posturl = os.path.join(FLAGS.baseurl, 'cli', 'manage_slide/')
     try:
       return self.post_multipart(posturl, fields, files)
     except urllib2.HTTPError, e:
@@ -149,10 +190,102 @@ class AuthedActivity(object):
   
   
 
+def makeDestinationDirectory(directory):
+  destdir = os.path.join('..', '00bundles', directory)
+  if not os.path.exists(destdir):
+    os.makedirs(destdir)
+  return destdir
+
+def makeBundle(directory):
+  origdir = os.getcwd()
+  try:
+    os.chdir(directory)
+    files = glob('*')
+    if 'manifest.js' in files:
+      dest = os.path.join(makeDestinationDirectory(directory), 'bundle.tar.gz')
+      bundle = tarfile.open(dest, "w:gz")
+      for name in files:
+        bundle.add(name)
+      bundle.close()
+      logging.info('Created bundle for %s in %s' % (directory, dest))
+      return True
+    else:
+      logging.error("no manifest file in \"%s\", aborting." % directory)
+      return False
+  finally:
+    os.chdir(origdir)
+
+def createAllBundles():
+  for x in os.listdir('.'):
+    if not os.path.isdir(x):
+      logging.debug('Skipping non-dir %s' % x)
+    elif not os.path.exists(os.path.join(x, 'manifest.js')):
+      logging.debug('No manifest in %s' % x)
+    else: 
+      makeBundle(x)
+
+def usage(foo=''):
+  print __doc__
+  sys.exit(2)
+
+# From
+# http://ginstrom.com/scribbles/2007/09/04/pretty-printing-a-table-in-python/
+def get_max_width(table, index):
+  """Get the maximum width of the given column index"""
+  return max([len(str(row[index])) for row in table])
+
+# From
+# http://ginstrom.com/scribbles/2007/09/04/pretty-printing-a-table-in-python/
+def pprint_table(out, table):
+  """Prints out a table of data, padded for alignment
+  @param out: Output stream (file-like object)
+  @param table: The table to print. A list of lists.
+  Each row must have the same number of columns. """
+  col_paddings = []
+
+  for i in range(len(table[0])):
+      col_paddings.append(get_max_width(table, i))
+
+  for row in table:
+      # left col
+      print >> out, row[0].ljust(col_paddings[0] + 1),
+      # rest of the cols
+      for i in range(1, len(row)):
+          col = str(row[i]).rjust(col_paddings[i] + 2)
+          print >> out, col,
+      print >> out
+
+
 if __name__ == '__main__':
   args = FLAGS(sys.argv)
+  mode = ''
+  if len(args) < 2:
+    usage(args)
+  args = args[1:]
+  mode = str(args[0])
   a = AuthedActivity()
-  if len(args) == 3:
-    print a.update_slide(args[1], args[2]).read()
-  elif len(args) == 2:
-    print a.create_slide(args[1]).read()
+  try:
+    if mode == 'bundle' and len(args) == 2:
+      param = args[1]
+      print 'Creating bundle of %s' % param
+      makeBundle(param)
+    elif mode == 'allbundle' and len(args) == 1:
+      print 'Creating all bundles'
+      createAllBundles()
+    elif mode == 'update' and len(args) == 3:
+      id = int(args[1])
+      bundle = args[2]
+      print 'Updating #%d with %s' % (id, bundle)
+      print a.update_slide(id, bundle).read()
+    elif mode == 'upload' and len(args) == 2:
+      bundle = args[1]
+      print 'Uploading new instance of %s' % bundle
+      print a.create_slide(bundle).read()
+    elif mode == 'list' and len(args) == 1:
+      slides = a.get_slide_listing()
+      pprint_table(sys.stdout, slides)    
+    else:
+      raise Exception, 'No commands matched'
+  except Exception, e:
+    print e
+    usage()
