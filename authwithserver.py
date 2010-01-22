@@ -7,10 +7,11 @@ import gflags
 import sys
 import os
 import mimetypes
+import time
 
 gflags.DEFINE_string('authcookiefile', '~/.dds/authcookies.dat',
                      'Path to authcookiefile')
-gflags.DEFINE_string('baseurl', 'http://localhost:8000/',
+gflags.DEFINE_string('baseurl', 'http://localhost/',
                      'DDS Server Base URL')
 FLAGS = gflags.FLAGS
 
@@ -25,8 +26,9 @@ class AuthedActivity(object):
   def setupcookies(self):
     self.cookiejar = cookielib.MozillaCookieJar(filename=self.cookiefile())
     handler = urllib2.HTTPCookieProcessor(self.cookiejar)
-    opener = urllib2.build_opener(handler)
-    urllib2.install_opener(opener)
+    rhandler = urllib2.HTTPRedirectHandler()
+    self.opener = urllib2.build_opener(handler)
+    self.opener.add_handler(rhandler)
   
   def loadcookies(self):
     try:
@@ -51,7 +53,7 @@ class AuthedActivity(object):
       pd = None
       if postdict is not None:
         pd = urllib.urlencode(postdict)
-      f = urllib2.urlopen(url, pd)
+      f = self.opener.open(url, pd)
       returnedurl = f.geturl()
       if '/accounts/login/' in returnedurl and recurse:
         self.doauth(returnedurl)
@@ -96,19 +98,22 @@ class AuthedActivity(object):
   def post_multipart(self, url, fields, files, recurse=True):
     self.loadcookies()
     try:
-      content_type, body = self.encode_multipart_formdata(fields, files)
-      headers = {'Content-type': content_type,
-      'Content-length': str(len(body))}
-      req = urllib2.Request(url, body, headers)
-      print 'hi'
-      r = urllib2.urlopen(req)
-      print 'hi'
-      #returnedurl = r.geturl()
-      #if '/accounts/login/' in returnedurl and recurse:
-      #  self.doauth(returnedurl)
-      #  return self.post_multipart(url, fields, files)
-      #else:
-      return r
+      try:
+        content_type, body = self.encode_multipart_formdata(fields, files)
+        headers = {'Content-type': content_type,
+        'Content-length': str(len(body))}
+        req = urllib2.Request(url, body, headers)
+        time.sleep(0.1)
+        print 'hi'
+        r = self.opener.open(req)
+        time.sleep(0.1)
+        print 'hi'
+        return r
+      except Exception, e:
+        print 'Upload Failed, Authentication required!'
+        time.sleep(1)
+        self.doauth(os.path.join(FLAGS.baseurl, 'accounts', 'login/'))
+        return self.post_multipart(url, fields, files, recurse)
     finally:
       self.cookiejar.save()
 
