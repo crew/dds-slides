@@ -187,8 +187,47 @@ class AuthedActivity(object):
       return self.post_multipart(posturl, fields, files)
     except urllib2.HTTPError, e:
       print 'Error encountered %s' % e.read()
-  
-  
+ 
+
+class ManifestValidator(object):
+  def __init__(self, manifestpath):
+    self.path = manifestpath
+    self.m = json.load(open(manifestpath))
+    self.ok = True
+
+  def errormsg(self, err):
+    logging.error('%s in "%s"' % (err, self.path))
+    self.ok = False
+
+  def field_exists(self, name):
+    if name not in self.m:
+      self.errormsg('Field %s missing' % name)
+      return False
+    else:
+      return True
+
+  def field_has_values(self, name, values):
+    if self.field_exists(name):
+      if self.m[name] not in values:
+        self.errormsg('Field %s needs to be one of %s' % (name, str(values)))
+
+  def validate(self):
+    self.ok = True
+    self.field_has_values('transition', ['fade'])
+    self.field_has_values('mode', ['module', 'layout'])
+    self.field_has_values('priority', range(11))
+    self.field_has_values('duration', range(5, 61))
+    self.field_exists('title')
+    if self.field_exists('thumbnail_img'):
+      if not os.path.exists(self.m['thumbnail_img']):
+        self.errormsg('thumbnail_img defined but "%s" does not exist'
+                      % self.m['thumbnail_img'])
+    return self.ok
+
+
+def validateManifest(manifestpath):
+  m = ManifestValidator(manifestpath)
+  return m.validate()
 
 def makeDestinationDirectory(directory):
   destdir = os.path.join('..', '00bundles', directory)
@@ -199,9 +238,16 @@ def makeDestinationDirectory(directory):
 def makeBundle(directory):
   origdir = os.getcwd()
   try:
+    logging.info('Attempting to bundle %s' % directory)
     os.chdir(directory)
     files = glob('*')
-    if 'manifest.js' in files:
+    if 'manifest.js' not in files:
+      logging.error("no manifest file in \"%s\", aborting." % directory)
+      return False
+    elif not validateManifest('manifest.js'):
+      logging.error('bad manifest file, aborting')
+      return False
+    else:
       dest = os.path.join(makeDestinationDirectory(directory), 'bundle.tar.gz')
       bundle = tarfile.open(dest, "w:gz")
       for name in files:
@@ -209,9 +255,6 @@ def makeBundle(directory):
       bundle.close()
       logging.info('Created bundle for %s in %s' % (directory, dest))
       return True
-    else:
-      logging.error("no manifest file in \"%s\", aborting." % directory)
-      return False
   finally:
     os.chdir(origdir)
 
@@ -267,7 +310,6 @@ if __name__ == '__main__':
   try:
     if mode == 'bundle' and len(args) == 2:
       param = args[1]
-      print 'Creating bundle of %s' % param
       makeBundle(param)
     elif mode == 'allbundle' and len(args) == 1:
       print 'Creating all bundles'
@@ -287,5 +329,4 @@ if __name__ == '__main__':
     else:
       raise Exception, 'No commands matched'
   except Exception, e:
-    print e
     usage()
