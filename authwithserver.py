@@ -11,7 +11,7 @@ import time
 
 gflags.DEFINE_string('authcookiefile', '~/.dds/authcookies.dat',
                      'Path to authcookiefile')
-gflags.DEFINE_string('baseurl', 'http://localhost/',
+gflags.DEFINE_string('baseurl', 'http://dds-master.ccs.neu.edu/dds/',
                      'DDS Server Base URL')
 FLAGS = gflags.FLAGS
 
@@ -104,12 +104,17 @@ class AuthedActivity(object):
         'Content-length': str(len(body))}
         req = urllib2.Request(url, body, headers)
         time.sleep(0.1)
-        print 'hi'
-        r = self.opener.open(req)
+        f = self.opener.open(req)
         time.sleep(0.1)
-        print 'hi'
-        return r
+        
+        returnedurl = f.geturl()
+        if '/accounts/login/' in returnedurl and recurse:
+          self.doauth(returnedurl)
+          return self.post_multipart(url, fields, files, recurse)
+        else:
+          return f
       except Exception, e:
+        print e
         print 'Upload Failed, Authentication required!'
         time.sleep(1)
         self.doauth(os.path.join(FLAGS.baseurl, 'accounts', 'login/'))
@@ -128,10 +133,26 @@ class AuthedActivity(object):
       return self.post_multipart(posturl, fields, files)
     except urllib2.HTTPError, e:
       print 'Error encountered %s' % e.read()
+
+  def update_slide(self, id, bundlepath):
+    id = int(id)
+    content = open(bundlepath).read()
+    fields = [('mode', 'update'), ('id', str(id))]
+    files = [('bundle', 'bundle.tar.gz', content)]
+    posturl = os.path.join(FLAGS.baseurl, 'cli', 'manage_slide')
+    if posturl[-1] != '/':
+      posturl += '/'
+    try:
+      return self.post_multipart(posturl, fields, files)
+    except urllib2.HTTPError, e:
+      print 'Error encountered %s' % e.read()
   
   
 
 if __name__ == '__main__':
   args = FLAGS(sys.argv)
   a = AuthedActivity()
-  print a.create_slide(args[1]).read()
+  if len(args) == 3:
+    print a.update_slide(args[1], args[2]).read()
+  elif len(args) == 2:
+    print a.create_slide(args[1]).read()

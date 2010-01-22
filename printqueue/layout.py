@@ -24,7 +24,7 @@ class PrintDisplay(baseslide.BaseSlide):
 
   def setupslide(self):
     self.refresh(self.dataURL)
-    self.parsedata(dataURL)
+    self.parsedata(self.dataURL)
 
   def refresh(self, dataURL):
     self.group.remove_all()
