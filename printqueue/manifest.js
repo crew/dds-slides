@@ -1,1 +1,1 @@
-{"transition" : "fade", "mode" : "module"}
+  

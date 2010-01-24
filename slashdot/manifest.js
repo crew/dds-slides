@@ -1,2 +1,2 @@
 {"transition" : "fade", "mode" : "module", "thumbnail_img": "_thumb.png",
- "title":"RSS Slide", "duration":10, "priority":3}
+ "title":"Slashdot Feed", "duration":10, "priority":3}
