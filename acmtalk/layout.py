@@ -24,10 +24,7 @@ class ACMCalendar(baseslide.BaseSlide):
 	    # Grab the .ics and parse it.
         ics = urllib.urlretrieve(CAL, 'cache.ics')
         self.calendar = Calendar.from_string(open('cache.ics', 'rb').read())
-
-        # Draw text and such
-        self.content = []
-        self.setupslide()
+        self.setupslide(first=True)
 
     def draw_bg(self):
         # Draw images
@@ -62,11 +59,12 @@ class ACMCalendar(baseslide.BaseSlide):
         stripe.set_depth(3)
         self.group.add(stripe)
    
-    def setupslide(self):
-        self.group.remove_all()
-        self.draw_bg()
+    def setupslide(self, first=False):
         e = self.pick_event()
-        self.draw_event(e)
+        if first:
+            self.draw_bg()
+            self.draw_event(e)
+        self.fill_event(e)
 
     def pick_event(self):
         # Filtering out those not occuring within 10 days of now, or that 
@@ -84,60 +82,54 @@ class ACMCalendar(baseslide.BaseSlide):
         del all_events
         return e
 
-    def purge(self):
-        for x in self.content:
-            x.unparent()
-            x.destroy()
-            self.content.remove(x)
-        self.content = []
-
-    def draw_event(self, event):
-        self.purge()
-        # Some of these events don't have descriptions or locations associated with them. Set as empty string.
+    def fill_event(self, event):
+        # Some of these events don't have descriptions or locations associated
+        # with them. Set as empty string.
         if not event.has_key('description'):
             event['description'] = ''
 
         if not event.has_key('location'):
             event['location'] = ''
 
-        eventtitle = clutter.Text()
-        eventtitle.set_text(event['summary'])
-        eventtitle.set_font_name('serif 58')
-        eventtitle.set_color(clutter.color_from_string('#ffffff'))
-        eventtitle.set_size(1920, 200)
-        eventtitle.set_position(50, 290)
-        eventtitle.set_depth(3)
-        self.group.add(eventtitle)
- 
-        descblock = clutter.Text()
-        descblock.set_text(event['description'])
-        descblock.set_font_name('serif 24')
-        descblock.set_color(clutter.color_from_string('#ffffff'))
-        descblock.set_position(20, 470)
-        descblock.set_size(1200, 500)
-        descblock.set_depth(3)
-        descblock.set_line_wrap(True)
-        self.group.add(descblock)
-
-        dateline = clutter.Text()
-        dateline.set_text(self.dtstart(event).strftime('%B %e %Y'))
-        dateline.set_font_name('serif 60')
-        dateline.set_color(clutter.color_from_string('#ffffff'))
-        dateline.set_position(950, 40)
-        dateline.set_size(820, 300)
-        dateline.set_depth(3)
-        self.group.add(dateline)
-
-        timeline = clutter.Text()
-        timeline.set_text(self.dtstart(event).strftime('%I:%M %p')
+        self.eventtitle.set_text(event['summary'])
+        self.descblock.set_text(event['description'])
+        self.dateline.set_text(self.dtstart(event).strftime('%B %e %Y'))
+        self.timeline.set_text(self.dtstart(event).strftime('%I:%M %p')
                           + ', ' + event['location'])
-        timeline.set_font_name('serif 48')
-        timeline.set_color(clutter.color_from_string('#ffffff'))
-        timeline.set_position(950, 150)
-        timeline.set_size(1200, 300)
-        timeline.set_depth(3)
-        self.group.add(timeline)
-        logging.debug(self.content)
+
+    def draw_event(self, event):
+        self.eventtitle = clutter.Text()
+        self.eventtitle.set_font_name('serif 58')
+        self.eventtitle.set_color(clutter.color_from_string('#ffffff'))
+        self.eventtitle.set_size(1920, 200)
+        self.eventtitle.set_position(10, 290)
+        self.eventtitle.set_depth(3)
+        self.group.add(self.eventtitle)
+ 
+        self.descblock = clutter.Text()
+        self.descblock.set_font_name('serif 24')
+        self.descblock.set_color(clutter.color_from_string('#ffffff'))
+        self.descblock.set_position(20, 470)
+        self.descblock.set_size(1200, 500)
+        self.descblock.set_depth(3)
+        self.descblock.set_line_wrap(True)
+        self.group.add(self.descblock)
+
+        self.dateline = clutter.Text()
+        self.dateline.set_font_name('serif 60')
+        self.dateline.set_color(clutter.color_from_string('#ffffff'))
+        self.dateline.set_position(950, 40)
+        self.dateline.set_size(820, 300)
+        self.dateline.set_depth(3)
+        self.group.add(self.dateline)
+
+        self.timeline = clutter.Text()
+        self.timeline.set_font_name('serif 48')
+        self.timeline.set_color(clutter.color_from_string('#ffffff'))
+        self.timeline.set_position(950, 150)
+        self.timeline.set_size(1200, 300)
+        self.timeline.set_depth(3)
+        self.group.add(self.timeline)
     
 
 app = ACMCalendar()

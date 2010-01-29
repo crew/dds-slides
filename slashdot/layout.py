@@ -94,14 +94,11 @@ class SlashdotDisplay(baseslide.BaseSlide):
       self.rssitems.append(title)
     return title.get_height()# + content.get_height()
 
-def main(args=None):
-  app = SlashdotDisplay("http://rss.slashdot.org/Slashdot/slashdot")
-  return 0
-
-if __name__ == '__main__':
-  sys.exit(main(sys.argv[1:]))
-
 # Put the ClutterGroup containing all the slide information
 # in the top level, so that DDS can get at it.
 app = SlashdotDisplay("http://rss.slashdot.org/Slashdot/slashdot")
 slide = app.group
+
+if __name__ == '__main__':
+  app.do_standalone_display()
+
