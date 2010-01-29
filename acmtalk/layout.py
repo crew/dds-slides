@@ -35,10 +35,10 @@ class ACMCalendar(baseslide.BaseSlide):
         bg.set_depth(1)
         self.group.add(bg)
  
-        sunbeams = clutter.Texture('sunbeams.png')
-        sunbeams.set_position(-800, -500)
-        sunbeams.set_depth(2)
-        self.group.add(sunbeams)
+        self.sunbeams = clutter.Texture('sunbeams.png')
+        self.sunbeams.set_position(-800, -500)
+        self.sunbeams.set_depth(2)
+        self.group.add(self.sunbeams)
 
         acmlogo = clutter.Texture('nuacmlogo.png')
         acmlogo.set_position(50, 50)
@@ -63,8 +63,13 @@ class ACMCalendar(baseslide.BaseSlide):
         e = self.pick_event()
         if first:
             self.draw_bg()
+            self.setupanimation()
             self.draw_event(e)
         self.fill_event(e)
+        self.tm.start()
+    
+    def teardownslide(self):
+        self.tm.stop()
 
     def pick_event(self):
         # Filtering out those not occuring within 10 days of now, or that 
@@ -130,6 +135,16 @@ class ACMCalendar(baseslide.BaseSlide):
         self.timeline.set_size(1200, 300)
         self.timeline.set_depth(3)
         self.group.add(self.timeline)
+
+    def setupanimation(self):
+        self.tm = clutter.Timeline(duration=100000)
+        self.tm.set_loop(True)
+        self.alpha = clutter.Alpha(self.tm, clutter.LINEAR)
+        self.behaviour = clutter.BehaviourRotate(clutter.Z_AXIS, 0.0, 360.0,
+                                                 self.alpha, clutter.ROTATE_CW)
+        self.behaviour.set_center(int(self.sunbeams.get_width()/2),
+                                  int(self.sunbeams.get_height()/2), 0)
+        self.behaviour.apply(self.sunbeams)
     
 
 app = ACMCalendar()
