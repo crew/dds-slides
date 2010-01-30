@@ -64,7 +64,7 @@ class PrintDisplay(baseslide.BaseSlide):
     title = "Print Queue for " + self.data["status"][2]["name"]
     feedtitleActor = clutter.Text()
     feedtitleActor.set_text(title)
-    feedtitleActor.set_font_name("DejaVu 64")
+    feedtitleActor.set_font_name("Helvetica 64")
     feedtitleActor.set_color(clutter.color_from_string("black"))
     feedtitleActor.set_size(SCREEN_WIDTH, 150)
     feedtitleActor.set_position(0, 0)
@@ -73,7 +73,7 @@ class PrintDisplay(baseslide.BaseSlide):
     headers = {"id":"Job ID", "owner":"Owner", "title":"Title",
                "state":"Status", "physicaldest":"Printer"}
     
-    y = 140
+    y = 110
     y += self.add_entry_group(headers, y, width=SCREEN_WIDTH) + 10
     for entry in self.data["jobs"]:
       if y >= SCREEN_HEIGHT:
@@ -83,9 +83,12 @@ class PrintDisplay(baseslide.BaseSlide):
 
   def add_entry_group(self, entry, starty, width=SCREEN_WIDTH):
 
-    # A dictionary which stores the clutter elements of this entry
-    dictentry = dict()
-
+    # a group which stores all the elements of this entry
+    # (that is, it stores all the elements
+    container = clutter.Group()
+    container.set_position(50, starty)
+    container.set_width(1700)
+    container.set_height(60)
     # Add a rectangle that wraps the text indicating the status of
     # the given job
     statusrect = clutter.Rectangle()
@@ -95,63 +98,64 @@ class PrintDisplay(baseslide.BaseSlide):
       statusrect.set_color(clutter.color_from_string("orange"))
     else: #probably the title bar, no color needed
       statusrect.set_color(clutter.color_from_string("white"))
-    statusrect.set_position(50, starty - 5)
+    statusrect.set_position(0, 0)
 
 
     title = clutter.Text()
-    title.set_font_name("DejaVu 24")
+    title.set_font_name("Helvetica 24")
     title.set_text(entry["id"].__str__())
     title.set_width(width)
     title.set_color(clutter.color_from_string("black"))
-    title.set_position(75, starty)
-    dictentry["title"] = title
+    title.set_position(30, 10)
 
     # paste the status rectangle in using the correct height from the
     # title text.
     statusrect.set_size(SCREEN_WIDTH - 160, title.get_height() + 10)
-    dictentry["statusrect"] = statusrect
+
+    container.add(statusrect)
     # now add the title in, so it come in above the status rectangle
+    container.add(title)
 
     content = clutter.Text()
     content.set_text(entry["owner"])
-    content.set_font_name("DejaVu 24")
+    content.set_font_name("Helvetica 24")
     content.set_line_wrap(True)
     content.set_line_wrap_mode(2)
     content.set_color(clutter.color_from_string("black"))
-    content.set_position(225, starty)
+    content.set_position(185, 10)
     content.set_width(width)
     content_height = content.get_height()
     content.set_ellipsize(3) 
-    dictentry["content"] = content
+    container.add(content)
 
     jobtitle = clutter.Text()
     jobtitle.set_text(entry["title"])
-    jobtitle.set_font_name("DejaVu 24")
+    jobtitle.set_font_name("Helvetica 24")
     jobtitle.set_line_wrap(True)
     jobtitle.set_line_wrap_mode(2)
     jobtitle.set_color(clutter.color_from_string("black"))
-    jobtitle.set_position(450, starty)
+    jobtitle.set_position(400, 10)
     jobtitle.set_width(width)
     jobtitle_height = jobtitle.get_height()
     jobtitle.set_ellipsize(3) #Omit characters at the end of the text
-    dictentry["jobtitle"] = jobtitle
+    container.add(jobtitle)
 
     status = clutter.Text()
     status.set_text(entry["state"])
-    status.set_font_name("DejaVu 24")
+    status.set_font_name("Helvetica 24")
     status.set_line_wrap(True)
     status.set_line_wrap_mode(2)
     status.set_color(clutter.color_from_string("black"))
-    status.set_position(900, starty)
+    status.set_position(850, 10)
     status.set_width(width)
     status_height = status.get_height()
     status.set_ellipsize(3) #Omit characters at the end of the text
-    dictentry["status"] = status
+    container.add(status)
 
     
     destination = clutter.Text()
     destination.set_text(entry["physicaldest"])
-    destination.set_font_name("DejaVu 24")
+    destination.set_font_name("Helvetica 24")
     destination.set_line_wrap(True)
     destination.set_line_wrap_mode(2)
     if entry["physicaldest"] == "dali":
@@ -160,13 +164,14 @@ class PrintDisplay(baseslide.BaseSlide):
       destination.set_color(clutter.color_from_string("black"))
     else:
       destination.set_color(clutter.color_from_string("red"))
-    destination.set_position(1200, starty)
+    destination.set_position(1150, 10)
     destination.set_width(width)
     destination_height = destination.get_height()
     destination.set_ellipsize(3) #Omit characters at the end of the text
-    dictentry["destination"]= destination
+    container.add(destination)
 
-    self.rows.append(dictentry)
+
+    self.rows.append(container)
     # Both items are oriented at the same height; 
     # only use the title height here
     return title.get_height()
@@ -174,12 +179,7 @@ class PrintDisplay(baseslide.BaseSlide):
   def render(self):
     """Renders the rows and colums from the rows object in this slide."""
     for row in self.rows:
-      self.group.add(row["statusrect"])
-      self.group.add(row["content"])
-      self.group.add(row["destination"])
-      self.group.add(row["status"])
-      self.group.add(row["jobtitle"])
-      self.group.add(row["title"])
+      self.group.add(row)
 
   def getreqwidth(self, element):
     """ Gets the column width needed for the given element. """
