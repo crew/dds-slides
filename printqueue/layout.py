@@ -63,14 +63,14 @@ class PrintDisplay(baseslide.BaseSlide):
     title = "Print Queue for " + self.data["status"][2]["name"]
     feedtitleActor = clutter.Text()
     feedtitleActor.set_text(title)
-    feedtitleActor.set_font_name("Helvetica 64")
+    feedtitleActor.set_font_name("Garamond 64")
     feedtitleActor.set_color(clutter.color_from_string("black"))
     feedtitleActor.set_size(SCREEN_WIDTH, 150)
     feedtitleActor.set_position(0, 0)
     self.group.add(feedtitleActor)
 
-    headers = {"id":"Job ID", "owner":"Owner", "title":"Title",
-               "state":"Status", "physicaldest":"Printer"}
+    headers = {"state":"Status", "owner":"Owner", "title":"Title",
+                "physicaldest":"Printer"}
 
     y = 110
     y += self.add_entry_group(headers, y, width=SCREEN_WIDTH) + 10
@@ -92,7 +92,7 @@ class PrintDisplay(baseslide.BaseSlide):
     # the given job
     statusrect = clutter.Rectangle()
     if entry["state"] == "completed":
-      statusrect.set_color(clutter.color_from_string("white"))
+      statusrect.set_border_color(clutter.color_from_string("white"))
     elif entry["state"] == "processing":
       statusrect.set_color(clutter.color_from_string("orange"))
     else: #probably the title bar, no color needed
@@ -100,28 +100,30 @@ class PrintDisplay(baseslide.BaseSlide):
     statusrect.set_position(0, 0)
 
 
-    title = clutter.Text()
-    title.set_font_name("Helvetica 24")
-    title.set_text(entry["id"].__str__())
-    title.set_width(width)
-    title.set_color(clutter.color_from_string("black"))
-    title.set_position(30, 10)
+    checkbox = clutter.Texture(filename="box.png")
+    checkbox.set_position(30, 10)
+    # TODO: Remove the magic numbers and set 1:1 size based on height
+    checkbox.set_width(40)
+    checkbox.set_height(40)
+    checkbox_height = checkbox.get_height()
+    container.add(checkbox)
 
-    # paste the status rectangle in using the correct height from the
-    # title text.
-    statusrect.set_size(SCREEN_WIDTH - 600, title.get_height() + 10)
+    if entry["state"] == "completed":
+      checkmark = clutter.Texture(filename="check.png")
+      checkmark.set_position(30, 10)
+      checkmark.set_width(checkbox.get_width())
+      checkmark.set_height(checkbox.get_height())
+      container.add(checkmark)
 
     container.add(statusrect)
-    # now add the title in, so it come in above the status rectangle
-    container.add(title)
 
     content = clutter.Text()
     content.set_text(entry["owner"])
-    content.set_font_name("Helvetica 24")
+    content.set_font_name("Garamond 24")
     content.set_line_wrap(True)
     content.set_line_wrap_mode(2)
     content.set_color(clutter.color_from_string("black"))
-    content.set_position(185, 10)
+    content.set_position(100, 10)
     content.set_width(width)
     content_height = content.get_height()
     content.set_ellipsize(3)
@@ -129,32 +131,20 @@ class PrintDisplay(baseslide.BaseSlide):
 
     jobtitle = clutter.Text()
     jobtitle.set_text(entry["title"])
-    jobtitle.set_font_name("Helvetica 24")
+    jobtitle.set_font_name("Garamond 24")
     jobtitle.set_line_wrap(True)
     jobtitle.set_line_wrap_mode(2)
     jobtitle.set_color(clutter.color_from_string("black"))
-    jobtitle.set_position(400, 10)
+    jobtitle.set_position(300, 10)
     jobtitle.set_width(width)
     jobtitle_height = jobtitle.get_height()
-    jobtitle.set_ellipsize(3) #Omit characters at the end of the text
+    #jobtitle.set_ellipsize(3) #Omit characters at the end of the text
     container.add(jobtitle)
-
-    status = clutter.Text()
-    status.set_text(entry["state"])
-    status.set_font_name("Helvetica 24")
-    status.set_line_wrap(True)
-    status.set_line_wrap_mode(2)
-    status.set_color(clutter.color_from_string("black"))
-    status.set_position(850, 10)
-    status.set_width(width)
-    status_height = status.get_height()
-    status.set_ellipsize(3) #Omit characters at the end of the text
-    container.add(status)
 
 
     destination = clutter.Text()
     destination.set_text(entry["physicaldest"])
-    destination.set_font_name("Helvetica 24")
+    destination.set_font_name("Garamond 24")
     destination.set_line_wrap(True)
     destination.set_line_wrap_mode(2)
     if entry["physicaldest"] == "dali":
@@ -173,7 +163,7 @@ class PrintDisplay(baseslide.BaseSlide):
     self.rows.append(container)
     # Both items are oriented at the same height;
     # only use the title height here
-    return title.get_height()
+    return checkbox.get_height()
 
   def render(self):
     """Renders the rows and colums from the rows object in this slide."""
