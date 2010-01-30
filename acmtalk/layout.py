@@ -24,7 +24,7 @@ class ACMCalendar(baseslide.BaseSlide):
 	    # Grab the .ics and parse it.
         ics = urllib.urlretrieve(CAL, 'cache.ics')
         self.calendar = Calendar.from_string(open('cache.ics', 'rb').read())
-        self.setupslide(first=True)
+        self.event_beforeshow(first=True)
 
     def draw_bg(self):
         # Draw images
@@ -59,7 +59,7 @@ class ACMCalendar(baseslide.BaseSlide):
         stripe.set_depth(3)
         self.group.add(stripe)
    
-    def setupslide(self, first=False):
+    def event_beforeshow(self, first=False):
         e = self.pick_event()
         if first:
             self.draw_bg()
@@ -68,7 +68,7 @@ class ACMCalendar(baseslide.BaseSlide):
         self.fill_event(e)
         self.tm.start()
     
-    def teardownslide(self):
+    def event_afterhide(self):
         self.tm.stop()
 
     def pick_event(self):
