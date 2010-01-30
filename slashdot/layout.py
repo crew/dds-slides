@@ -5,10 +5,6 @@ import cgi
 import feedparser
 import baseslide
 import logging
-from htmlentitydefs import name2codepoint
-# for some reason, python 2.5.2 doesn't have this one (apostrophe)
-name2codepoint['#39'] = 39
-# regex lib for stripping HTML tags
 import re
 
 class SlashdotDisplay(baseslide.BaseSlide):
@@ -60,6 +56,9 @@ class SlashdotDisplay(baseslide.BaseSlide):
     content.set_ellipsize(3) #Omit characters at the end of the text
     self.rssitems.append(content)
 
+  def addTopStory(self, title, body):
+    self.addTopStoryText(body, self.addTopStoryTitle(title))
+
   def addrss(self, feedURL):
     """ Adds the RSS feed information to this slide. """
     #TODO: ERROR CHECKING: MAKE SURE WE DON'T EXPLODE WITH A BAD FEED
@@ -70,8 +69,8 @@ class SlashdotDisplay(baseslide.BaseSlide):
     for entry in rssfeed.entries:
       if not y:
         y = 200
-        toptitle = self.addTopStoryTitle(remove_html_tags(entry.title))
-        self.addTopStoryText(remove_html_tags(entry.summary), toptitle)
+        self.addTopStory(self.RemoveHTMLTags(entry.title),
+                         self.RemoveHTMLTags(entry.summary))
       elif y >= 1080:
         break
       else:
@@ -82,7 +81,7 @@ class SlashdotDisplay(baseslide.BaseSlide):
 
 
   def add_entry_group(self, entry, starty):
-    topstorytitle = remove_html_tags(entry.title)
+    topstorytitle = self.RemoveHTMLTags(entry.title)
     title = clutter.Text()
     title.set_font_name("sans serif 18")
     title.set_text(topstorytitle)
@@ -95,25 +94,11 @@ class SlashdotDisplay(baseslide.BaseSlide):
       self.rssitems.append(title)
     return title.get_height()# + content.get_height()
 
-def unescape(s):
-  """ Replaces HTML entities with their unicode equivalent"""
-  # unescape HTML code refs; c.f. http://wiki.python.org/moin/EscapingHtml
-  return re.sub('&(%s);' % '|'.join(name2codepoint),
-            lambda m: unichr(name2codepoint[m.group(1)]), s)
-
-def remove_html_tags(data):
-  """ Removes HTML tags and unscapes the given string. """
-  p = re.compile(r'<.*?>')
-  return unescape(p.sub('', data))
-
-def main(args=None):
-  app = SlashdotDisplay("http://rss.slashdot.org/Slashdot/slashdot")
-  return 0
-
-if __name__ == '__main__':
-  sys.exit(main(sys.argv[1:]))
-
 # Put the ClutterGroup containing all the slide information
 # in the top level, so that DDS can get at it.
 app = SlashdotDisplay("http://rss.slashdot.org/Slashdot/slashdot")
 slide = app.group
+
+if __name__ == '__main__':
+  app.do_standalone_display()
+
