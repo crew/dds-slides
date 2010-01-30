@@ -54,8 +54,7 @@ class PrintDisplay(baseslide.BaseSlide):
 
     # Make a white rectangle to give the slide a white background
     # (our current preferred solution)
-    background = clutter.Rectangle()
-    background.set_color(clutter.color_from_string("white"))
+    background = clutter.Texture(filename="background.jpg")
     background.set_size(SCREEN_WIDTH, SCREEN_HEIGHT)
     #background.set_size(3000,2000)
     background.set_position(0, 0)
@@ -93,7 +92,7 @@ class PrintDisplay(baseslide.BaseSlide):
     # the given job
     statusrect = clutter.Rectangle()
     if entry["state"] == "completed":
-      statusrect.set_color(clutter.color_from_string("#88ff77"))
+      statusrect.set_color(clutter.color_from_string("white"))
     elif entry["state"] == "processing":
       statusrect.set_color(clutter.color_from_string("orange"))
     else: #probably the title bar, no color needed
@@ -110,7 +109,7 @@ class PrintDisplay(baseslide.BaseSlide):
 
     # paste the status rectangle in using the correct height from the
     # title text.
-    statusrect.set_size(SCREEN_WIDTH - 160, title.get_height() + 10)
+    statusrect.set_size(SCREEN_WIDTH - 600, title.get_height() + 10)
 
     container.add(statusrect)
     # now add the title in, so it come in above the status rectangle
@@ -170,7 +169,7 @@ class PrintDisplay(baseslide.BaseSlide):
     destination.set_ellipsize(3) #Omit characters at the end of the text
     container.add(destination)
 
-
+    # Rotate
     self.rows.append(container)
     # Both items are oriented at the same height;
     # only use the title height here
@@ -178,8 +177,14 @@ class PrintDisplay(baseslide.BaseSlide):
 
   def render(self):
     """Renders the rows and colums from the rows object in this slide."""
+    rowContainer = clutter.Group()
     for row in self.rows:
-      self.group.add(row)
+      rowContainer.add(row)
+
+    # Now rotate the container that holds the rows
+    rowContainer.move_by(175, 150)
+    rowContainer.set_rotation(clutter.Z_AXIS, -3, 0, 0, 0)
+    self.group.add(rowContainer)
 
   def getreqwidth(self, element):
     """ Gets the column width needed for the given element. """
