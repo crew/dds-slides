@@ -36,11 +36,11 @@ class PrintDisplay(baseslide.BaseSlide):
 
   def parsedata(self, url):
     """ Parse data from the given URL, and populate data objects
-        with that data. """ 
+        with that data. """
     # use urllib to grab data from the url we're given
     webjson = urllib.urlopen(url)
     fdata = webjson.read() # the raw JSON from the printserver
-    
+
     converter = json.JSONDecoder()
     pyjson = converter.decode(fdata)
 
@@ -50,7 +50,7 @@ class PrintDisplay(baseslide.BaseSlide):
 
   def makeslide(self):
     """ Adds the json print feed information to this slide. """
-    
+
 
     # Make a white rectangle to give the slide a white background
     # (our current preferred solution)
@@ -69,16 +69,16 @@ class PrintDisplay(baseslide.BaseSlide):
     feedtitleActor.set_size(SCREEN_WIDTH, 150)
     feedtitleActor.set_position(0, 0)
     self.group.add(feedtitleActor)
-    
+
     headers = {"id":"Job ID", "owner":"Owner", "title":"Title",
                "state":"Status", "physicaldest":"Printer"}
-    
+
     y = 110
     y += self.add_entry_group(headers, y, width=SCREEN_WIDTH) + 10
     for entry in self.data["jobs"]:
       if y >= SCREEN_HEIGHT:
         break
-      y += self.add_entry_group(entry, y, width=SCREEN_WIDTH) + 12 
+      y += self.add_entry_group(entry, y, width=SCREEN_WIDTH) + 12
 
 
   def add_entry_group(self, entry, starty, width=SCREEN_WIDTH):
@@ -125,7 +125,7 @@ class PrintDisplay(baseslide.BaseSlide):
     content.set_position(185, 10)
     content.set_width(width)
     content_height = content.get_height()
-    content.set_ellipsize(3) 
+    content.set_ellipsize(3)
     container.add(content)
 
     jobtitle = clutter.Text()
@@ -152,7 +152,7 @@ class PrintDisplay(baseslide.BaseSlide):
     status.set_ellipsize(3) #Omit characters at the end of the text
     container.add(status)
 
-    
+
     destination = clutter.Text()
     destination.set_text(entry["physicaldest"])
     destination.set_font_name("Helvetica 24")
@@ -172,7 +172,7 @@ class PrintDisplay(baseslide.BaseSlide):
 
 
     self.rows.append(container)
-    # Both items are oriented at the same height; 
+    # Both items are oriented at the same height;
     # only use the title height here
     return title.get_height()
 
