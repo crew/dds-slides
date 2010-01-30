@@ -2,12 +2,8 @@ import clutter
 import sys
 import baseslide
 import logging
-import urllib # reading json from internet
-import json # read json from printserver
-from htmlentitydefs import name2codepoint
-# for some reason, python 2.5.2 doesn't have this one (apostrophe)
-name2codepoint['#39'] = 39
-# regex lib for stripping HTML tags
+import urllib
+import json
 import re
 
 SCREEN_HEIGHT = 1200
@@ -18,21 +14,30 @@ class PrintDisplay(baseslide.BaseSlide):
     """ Initializes the stage and score for this slide, using the
         given url to get the printer data. """
     baseslide.BaseSlide.__init__(self)
-    self.parsedata(dataURL)
     # Stores the information for all the elements of each row
     self.rows = list()
-    self.makeslide()
-    self.render()
     self.dataURL = dataURL
+    # Background
+    self.background = clutter.Texture(filename='background.jpg')
+    self.background.set_size(SCREEN_WIDTH, SCREEN_HEIGHT)
+    self.background.set_position(0, 0)
+    self.checkbox = clutter.Texture(filename='checkbox.png')
+    self.checkbox.set_size(40, 40)
+    self.checkbox.hide()
+    self.checkmark = clutter.Texture(filename='checkmark.png')
+    self.checkmark.set_size(40, 40)
+    self.checkmark.hide()
 
-  def setupslide(self):
+  def event_beforeshow(self):
     self.refresh(self.dataURL)
-    self.parsedata(self.dataURL)
 
   def refresh(self, dataURL):
     self.group.remove_all()
+    self.group.add(self.checkbox)
+    self.group.add(self.checkmark)
     self.parsedata(dataURL)
     self.makeslide()
+    self.render()
 
   def parsedata(self, url):
     """ Parse data from the given URL, and populate data objects
@@ -50,15 +55,9 @@ class PrintDisplay(baseslide.BaseSlide):
 
   def makeslide(self):
     """ Adds the json print feed information to this slide. """
-
-
     # Make a white rectangle to give the slide a white background
     # (our current preferred solution)
-    background = clutter.Texture(filename="background.jpg")
-    background.set_size(SCREEN_WIDTH, SCREEN_HEIGHT)
-    #background.set_size(3000,2000)
-    background.set_position(0, 0)
-    self.group.add(background)
+    self.group.add(self.background)
 
     title = "Print Queue for " + self.data["status"][2]["name"]
     feedtitleActor = clutter.Text()
@@ -100,16 +99,19 @@ class PrintDisplay(baseslide.BaseSlide):
     statusrect.set_position(0, 0)
 
 
-    checkbox = clutter.Texture(filename="box.png")
+    if self.checkbox is None:
+      pass
+    else:
+      checkbox = clutter.Clone(self.checkbox)
     checkbox.set_position(30, 10)
     # TODO: Remove the magic numbers and set 1:1 size based on height
-    checkbox.set_width(40)
-    checkbox.set_height(40)
-    checkbox_height = checkbox.get_height()
     container.add(checkbox)
 
     if entry["state"] == "completed":
-      checkmark = clutter.Texture(filename="check.png")
+      if self.checkmark is None:
+        checkmark = self.checkmark = clutter.Texture(filename='checkmark.png')
+      else:
+        checkmark = clutter.Clone(self.checkmark)
       checkmark.set_position(30, 10)
       checkmark.set_width(checkbox.get_width())
       checkmark.set_height(checkbox.get_height())
@@ -159,10 +161,7 @@ class PrintDisplay(baseslide.BaseSlide):
     destination.set_ellipsize(3) #Omit characters at the end of the text
     container.add(destination)
 
-    # Rotate
     self.rows.append(container)
-    # Both items are oriented at the same height;
-    # only use the title height here
     return checkbox.get_height()
 
   def render(self):
@@ -176,35 +175,5 @@ class PrintDisplay(baseslide.BaseSlide):
     rowContainer.set_rotation(clutter.Z_AXIS, -3, 0, 0, 0)
     self.group.add(rowContainer)
 
-  def getreqwidth(self, element):
-    """ Gets the column width needed for the given element. """
-
-def addBackground(self):
-  stageBackground = clutter.Texture('feedimage.png')
-  stageBackground.set_position(0, 0)
-  self.group.add(stageBackground)
-
-def unescape(s):
-  """ Replaces HTML entities with their unicode equivalent"""
-  # unescape HTML code refs; c.f. http://wiki.python.org/moin/EscapingHtml
-  return re.sub('&(%s);' % '|'.join(name2codepoint),
-                lambda m: unichr(name2codepoint[m.group(1)]), s)
-
-def remove_html_tags(data):
-  """ Removes HTML tags and unscapes the given string. """
-  p = re.compile(r'<.*?>')
-  return unescape(p.sub('', data))
-
-def main(args=None):
-  app = PrintDisplay("http://queueviewer.ccs.neu.edu/printqueue/102/json/")
-  return 0
-
-if __name__ == '__main__':
-  sys.exit(main(sys.argv[1:]))
-
-# Put the ClutterGroup containing all the slide information
-# in the top level, so that DDS can get at it.
 app = PrintDisplay("http://queueviewer.ccs.neu.edu/printqueue/102/json/")
-#app = RSSDisplay("http://feeds.digg.com/digg/popular.rss")
-
 slide = app.group
