@@ -137,7 +137,7 @@ class ACMCalendar(baseslide.BaseSlide):
         self.group.add(self.timeline)
 
     def setupanimation(self):
-        self.tm = clutter.Timeline(duration=100000)
+        self.tm = clutter.Timeline(duration=200000)
         self.tm.set_loop(True)
         self.alpha = clutter.Alpha(self.tm, clutter.LINEAR)
         self.behaviour = clutter.BehaviourRotate(clutter.Z_AXIS, 0.0, 360.0,
