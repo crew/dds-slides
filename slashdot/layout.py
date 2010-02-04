@@ -6,6 +6,7 @@ import feedparser
 import baseslide
 import logging
 import re
+import random
 
 class SlashdotDisplay(baseslide.BaseSlide):
   def __init__(self, feedURL):
@@ -15,6 +16,7 @@ class SlashdotDisplay(baseslide.BaseSlide):
     self.rssitems = []
 
     self.setupBackground()
+    self.setupSlider()
     self.addrss(feedURL)
 
   def setupBackground(self):
@@ -22,7 +24,12 @@ class SlashdotDisplay(baseslide.BaseSlide):
     stageBackground.set_position(0, 0)
     self.group.add(stageBackground)
 
-  def setupslide(self):
+  def setupSlider(self):
+    self.slider = clutter.Texture('slider.png')
+    self.slider.set_position(0,0)
+    self.group.add(self.slider)
+
+  def before_show(self):
     self.refresh(self.feedURL)
 
   def refresh(self, feedURL):
@@ -65,17 +72,23 @@ class SlashdotDisplay(baseslide.BaseSlide):
     rssfeed = feedparser.parse(feedURL)
     self.rssitems = []
 
-    y = 0
+    y = 200
+    item_positions = []
     for entry in rssfeed.entries:
-      if not y:
-        y = 200
-        self.addTopStory(self.RemoveHTMLTags(entry.title),
-                         self.RemoveHTMLTags(entry.summary))
-      elif y >= 1080:
-        break
+      dy, added = self.add_entry_group(entry, y)
+      if added:
+        item_positions.append(y)
+        y += dy + 20
       else:
-        y += self.add_entry_group(entry, y) + 20
-    
+        break
+
+    top_story_id = random.randint(0, len(item_positions)-1)
+    top_entry = rssfeed.entries[top_story_id]
+    top_story_y = item_positions[top_story_id]   
+    self.slider.set_position(945, top_story_y-12)
+    self.addTopStory(self.RemoveHTMLTags(top_entry.title),
+                     self.RemoveHTMLTags(top_entry.summary))
+
     for x in self.rssitems:
       self.group.add(x)
 
@@ -92,7 +105,8 @@ class SlashdotDisplay(baseslide.BaseSlide):
     title.set_line_wrap_mode(2)
     if (title.get_height() + starty + 50) < 1080:
       self.rssitems.append(title)
-    return title.get_height()# + content.get_height()
+      return (title.get_height(), True)
+    return (title.get_height(), False)
 
 # Put the ClutterGroup containing all the slide information
 # in the top level, so that DDS can get at it.
