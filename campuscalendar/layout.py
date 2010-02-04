@@ -24,6 +24,12 @@ class CampusCalendar(baseslide.BaseSlide):
 	      vevent['summary'] if not vevent.has_key('description') else vevent['description']
 
     def __init__(self):
+	      self.refresh()
+
+    def event_beforeshow(self):
+	      self.refresh()
+
+    def refresh(self):
 	      # Grab the .ics and parse it.
         ics = urllib.urlretrieve('http://www.trumba.com/calendars/northeastern-events.ics', 'cache.ics')
         calendar = Calendar.from_string(open('cache.ics', 'rb').read())
