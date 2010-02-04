@@ -16,9 +16,9 @@ class PitcamSlide(baseslide.BaseSlide):
 
     self.newcam = None
     self.oldcam = None
-    self.beforeshow()
+    self.event_beforeshow()
 
-  def beforeshow(self):
+  def event_beforeshow(self):
     self.getnew()
     self.getold()
 
