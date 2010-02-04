@@ -1,3 +1,4 @@
+import cairo
 import clutter
 import sys
 import baseslide
@@ -21,20 +22,20 @@ class PrintDisplay(baseslide.BaseSlide):
     self.background = clutter.Texture(filename='background.jpg')
     self.background.set_size(SCREEN_WIDTH, SCREEN_HEIGHT)
     self.background.set_position(0, 0)
-    self.checkbox = clutter.Texture(filename='checkbox.png')
-    self.checkbox.set_size(40, 40)
-    self.checkbox.hide()
     self.checkmark = clutter.Texture(filename='checkmark.png')
     self.checkmark.set_size(40, 40)
     self.checkmark.hide()
+    self.xmark = clutter.Texture(filename='xmark.png')
+    self.xmark.set_size(40, 40)
+    self.xmark.hide()
 
   def event_beforeshow(self):
     self.refresh(self.dataURL)
 
   def refresh(self, dataURL):
     self.group.remove_all()
-    self.group.add(self.checkbox)
     self.group.add(self.checkmark)
+    self.group.add(self.xmark)
     self.parsedata(dataURL)
     self.makeslide()
     self.render()
@@ -98,14 +99,33 @@ class PrintDisplay(baseslide.BaseSlide):
       statusrect.set_color(clutter.color_from_string("white"))
     statusrect.set_position(0, 0)
 
+    ### CHECKBOX AND MARKS ###
 
-    if self.checkbox is None:
-      pass
-    else:
-      checkbox = clutter.Clone(self.checkbox)
-    checkbox.set_position(30, 10)
-    # TODO: Remove the magic numbers and set 1:1 size based on height
+    checkbox = clutter.CairoTexture(width=50, height=50)
+    checkbox.set_position(30,10)
+    # we obtain a cairo context from the clutter.CairoTexture
+    # and then we can use it with the cairo primitives to draw
+    # on it.
+    context = checkbox.cairo_create()
+
+    # we scale the context to the size of the surface
+    context.set_line_width(2)
+    context.set_source_color(clutter.color_from_string("black"))
+    # This number is in radians and was found by trial&error
+    # See: http://en.wikipedia.org/wiki/File:Degree-Radian_Conversion.svg
+    context.rotate(6.28)
+    self.roundedrec(context, 5, 5, 30, 30, 5)
+    context.stroke()
+
+    del(context) # we need to destroy the context so that the
+                 # texture gets properly updated with the result
+                 # of our operations; you can either move all the
+                 # drawing operations into their own function and
+                 # let the context go out of scope or you can
+                 # explicitly destroy it
+
     container.add(checkbox)
+    container.show()
 
     if entry["state"] == "completed":
       if self.checkmark is None:
@@ -113,9 +133,19 @@ class PrintDisplay(baseslide.BaseSlide):
       else:
         checkmark = clutter.Clone(self.checkmark)
       checkmark.set_position(30, 10)
-      checkmark.set_width(checkbox.get_width())
-      checkmark.set_height(checkbox.get_height())
+      checkmark.set_width(checkbox.get_width() - 7)
+      checkmark.set_height(checkbox.get_height() - 7)
       container.add(checkmark)
+
+    if entry["state"] == "canceled":
+      if self.xmark is None:
+        xmark = self.xmark = clutter.Texture(filename='xmark.png')
+      else:
+        xmark = clutter.Clone(self.xmark)
+      xmark.set_position(30, 10)
+      xmark.set_width(checkbox.get_width() - 7)
+      xmark.set_height(checkbox.get_height() - 7)
+      container.add(xmark)
 
     container.add(statusrect)
 
@@ -163,6 +193,19 @@ class PrintDisplay(baseslide.BaseSlide):
 
     self.rows.append(container)
     return checkbox.get_height()
+
+  def roundedrec(self,context,x,y,w,h,r = 10):
+    "Draw a rounded rectangle"
+    context.move_to(x+r,y)                      # Move to A
+    context.line_to(x+w-r,y)                    # Straight line to B
+    context.curve_to(x+w,y,x+w,y,x+w,y+r)       # Curve to C, Control points are both at Q
+    context.line_to(x+w,y+h-r)                  # Move to D
+    context.curve_to(x+w,y+h,x+w,y+h,x+w-r,y+h) # Curve to E
+    context.line_to(x+r,y+h)                    # Line to F
+    context.curve_to(x,y+h,x,y+h,x,y+h-r)       # Curve to G
+    context.line_to(x,y+r)                      # Line to H
+    context.curve_to(x,y,x,y,x+r,y)             # Curve to A
+    return
 
   def render(self):
     """Renders the rows and colums from the rows object in this slide."""
