@@ -77,8 +77,8 @@ class CampusCamSlide(baseslide.BaseSlide):
         neu_webcam = "http://155.33.227.163:8080/%s/webcam.jpg"
         locations = [(neu_webcam % 1, 880, 300, TOP),   # Marino Outside
                      (neu_webcam % 2, 1420, 430, TOP),  # QUAD
-                     (neu_webcam % 3, 1300, 15, LEFT),  # Marino Inside
-                     (neu_webcam % 4, 1410, 785, TOP),  # Curry Student Center
+                     (neu_webcam % 3, 1410, 785, TOP),  # Curry Student Center
+                     (neu_webcam % 4, 1300, 15, LEFT),  # Marino Inside
                      (neu_webcam % 5, 262, 776, RIGHT), # Centenial Commons
                      ("http://pitcam.ccs.neu.edu/new.jpeg", 375, 440, TOP)  # New PitCam
         ]
