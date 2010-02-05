@@ -7,10 +7,19 @@ import logging
 import urllib
 import datetime
 import dateutil.parser
-from random import choice
+import random
+
 from icalendar import Calendar
 
+CALURL='http://www.trumba.com/calendars/northeastern-events.ics'
+
+
 class CampusCalendar(baseslide.BaseSlide):
+    def __init__(self):
+        self.calendar = None
+        self.events = None
+        self.refresh()
+
     def dtstart(self, vevent):
         return dateutil.parser.parse(str(vevent['dtstart']))
 
@@ -18,34 +27,48 @@ class CampusCalendar(baseslide.BaseSlide):
         return dateutil.parser.parse(str(vevent['dtend']))
 
     def location(self, vevent):
-	      "" if not vevent.has_key('location') else vevent['location']
+        if not vevent.has_key('location'):
+            return ""
+        else:
+            return vevent['location']
 
     def description(self, vevent):
-	      vevent['summary'] if not vevent.has_key('description') else vevent['description']
-
-    def __init__(self):
-	      self.refresh()
+        if not vevent.has_key('description'):
+            return vevent['summary']
+        else:
+            return vevent['description']
 
     def event_beforeshow(self):
-	      self.refresh()
+        self.refresh()
+
+    def download_parse(self):
+        if self.calendar is None:
+            tmpfilename = 'cache.ics'
+            ics = urllib.urlretrieve(CALURL, tmpfilename)
+            self.calendar = Calendar.from_string(open(tmpfilename).read())
+
+    def filter_events(self):
+        """Filter events not occuring within 20 days of now."""
+        if self.events is None:
+            # Filtering out those not occuring within 20 days of now,
+            # or that occured in the past.
+            today = datetime.datetime.today()
+            delta = datetime.timedelta(days=5)
+            self.events = []
+            for e in self.calendar.walk('vevent'):
+                if ((self.dtstart(e) > today) and
+                    (self.dtstart(e) < (today + delta))):
+                    self.events.append(e)
 
     def refresh(self):
-	      # Grab the .ics and parse it.
-        ics = urllib.urlretrieve('http://www.trumba.com/calendars/northeastern-events.ics', 'cache.ics')
-        calendar = Calendar.from_string(open('cache.ics', 'rb').read())
+        self.download_parse()
+        self.filter_events()
+        event = random.choice(self.events)
 
-        # Filtering out those not occuring within 20 days of now, or that occured in the past.	
-        today = datetime.datetime.today()
-        delta = datetime.timedelta(days=20)
-        all_events = filter(lambda e: (self.dtstart(e) > today) and (self.dtstart(e) < today + delta), calendar.walk('vevent'))
-
-        # Pick an event randomly.
-        event = choice(all_events)
-
-        # Some of these events don't have descriptions or locations associated with them. Set as empty string.
+        # Some of these events don't have descriptions or locations associated
+        # with them. Set as empty string.
         if not event.has_key('description'):
             event['description'] = ''
-
         if not event.has_key('location'):
             event['location'] = ''
 
@@ -71,7 +94,7 @@ class CampusCalendar(baseslide.BaseSlide):
         eventtitle.set_ellipsize(3)
         eventtitle.set_depth(3)
         self.group.add(eventtitle)
- 
+
         locationline = clutter.Text()
         locationline.set_text(event['location'])
         locationline.set_font_name('serif 24')
@@ -110,7 +133,7 @@ class CampusCalendar(baseslide.BaseSlide):
         descblock.set_depth(3)
         descblock.set_line_wrap(True)
         self.group.add(descblock)
-    
+
 
 app = CampusCalendar()
 slide = app.group
