@@ -39,7 +39,7 @@ class WeatherDisplay(baseslide.BaseSlide):
     icons["chance_of_tstorm"] = "weather-thundershower"
     return icons[name]
 
-  def setupslide(self):
+  def event_beforeshow(self):
     self.refresh(self.location)
 
   def refresh(self, location):
