@@ -98,10 +98,11 @@ class SlashdotDisplay(baseslide.BaseSlide):
     title.set_font_name("sans serif 18")
     title.set_text(topstorytitle)
     title.set_width(870)
+    title.set_ellipsize(3)
     title.set_color(clutter.color_from_string("black"))
     title.set_position(1000, starty)
-    title.set_line_wrap(True)
-    title.set_line_wrap_mode(2)
+    #title.set_line_wrap()
+    #title.set_line_wrap_mode(2)
     if (title.get_height() + starty + 50) < 1080:
       self.rssitems.append(title)
       return (title.get_height(), True)
