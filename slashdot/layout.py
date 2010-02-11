@@ -18,7 +18,7 @@ class SlashdotDisplay(baseslide.BaseSlide):
     self.addrss(feedURL)
 
   def setupBackground(self):
-    stageBackground = clutter.Texture('slider.png')
+    stageBackground = clutter.Texture('background.png')
     stageBackground.set_position(0, 0)
     self.group.add(stageBackground)
 
@@ -26,7 +26,6 @@ class SlashdotDisplay(baseslide.BaseSlide):
     self.slider = clutter.Texture('slider.png')
     self.slider.set_position(0,0)
     self.slider.set_opacity(255)
-    self.slider.show()
     self.group.add(self.slider)
 
   def event_beforeshow(self):
@@ -85,18 +84,12 @@ class SlashdotDisplay(baseslide.BaseSlide):
     top_story_id = random.randint(0, len(item_positions)-1)
     top_entry = rssfeed.entries[top_story_id]
     top_story_y = item_positions[top_story_id]   
-    self.group.remove(self.slider)
-    self.group.add(self.slider)
     self.slider.set_position(945, top_story_y-12)
-    self.slider.set_position(0, 0)
-    self.slider.show()
-    self.slider.raise_top()
-    self.slider.set_opacity(255)
     self.addTopStory(self.RemoveHTMLTags(top_entry.title),
                      self.RemoveHTMLTags(top_entry.summary))
 
     for x in self.rssitems:
-      pass#self.group.add(x)
+      self.group.add(x)
 
 
   def add_entry_group(self, entry, starty):
