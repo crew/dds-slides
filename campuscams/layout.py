@@ -80,11 +80,13 @@ class CampusCamSlide(baseslide.BaseSlide):
                      (neu_webcam % 3, 1410, 785, TOP),  # Curry Student Center
                      (neu_webcam % 4, 1300, 15, LEFT),  # Marino Inside
                      (neu_webcam % 5, 262, 776, RIGHT), # Centenial Commons
-                     ("http://pitcam.ccs.neu.edu/new.jpeg", 375, 440, TOP)  # New PitCam
+                     # New PitCam
+                     ("http://pitcam.ccs.neu.edu/new.jpeg", 375, 440, TOP)
         ]
         self.cameras = [WebCamera(self, url, x, y, CAM_WIDTH, CAM_HEIGHT, side)
                         for (url, x, y, side) in locations]
-    def beforeshow(self):
+
+    def event_beforeshow(self):
         for camera in self.cameras:
             camera.refresh()
 
