@@ -1,4 +1,3 @@
-# To run as oneslide within slide 5 WD: tar -pvczf bundle.tar.gz .; /opt/local/bin/python2.6 ~/frontend/src/dds.py --oneslide 5
 # vim: set shiftwidth=4 tabstop=4 softtabstop=4 :
 import clutter
 import baseslide
@@ -6,10 +5,9 @@ import config
 import logging
 import urllib
 import datetime
-import dateutil.parser
 import random
 
-from icalendar import Calendar
+from vobject import iCalendar
 
 CALURL='http://www.trumba.com/calendars/northeastern-events.ics'
 
@@ -45,7 +43,7 @@ class CampusCalendar(baseslide.BaseSlide):
         if self.calendar is None:
             tmpfilename = 'cache.ics'
             ics = urllib.urlretrieve(CALURL, tmpfilename)
-            self.calendar = Calendar.from_string(open(tmpfilename).read())
+            self.calendar = iCalendar.from_string(open(tmpfilename).read())
 
     def filter_events(self):
         """Filter events not occuring within 20 days of now."""

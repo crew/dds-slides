@@ -15,6 +15,8 @@ class SlashdotDisplay(baseslide.BaseSlide):
     self.feedURL = feedURL
     self.rssitems = []
 
+    self.log = logging.getLogger('slashdot')
+
     self.setupBackground()
     self.setupSlider()
     self.addrss(feedURL)
@@ -27,15 +29,24 @@ class SlashdotDisplay(baseslide.BaseSlide):
   def setupSlider(self):
     self.slider = clutter.Texture('slider.png')
     self.slider.set_position(0,0)
+    self.slider.set_opacity(255)
     self.group.add(self.slider)
 
-  def before_show(self):
+  def event_beforeshow(self):
+    self.log.info("start before show")
     self.refresh(self.feedURL)
+    self.log.info("after refresh")
+
+  def event_aftershow(self):
+    self.slider.set_opacity(0)
 
   def refresh(self, feedURL):
+    self.log.info("start before refresh")
     for x in self.rssitems:
       self.group.remove(x)
+    self.log.info("before add rss")
     self.addrss(feedURL)
+    self.log.info("after add rss")
 
   def addTopStoryTitle(self, topstorytitle):
     title = clutter.Text()
@@ -69,6 +80,7 @@ class SlashdotDisplay(baseslide.BaseSlide):
   def addrss(self, feedURL):
     """ Adds the RSS feed information to this slide. """
     #TODO: ERROR CHECKING: MAKE SURE WE DON'T EXPLODE WITH A BAD FEED
+    self.log.info("in addrss")
     rssfeed = feedparser.parse(feedURL)
     self.rssitems = []
 
@@ -82,7 +94,9 @@ class SlashdotDisplay(baseslide.BaseSlide):
       else:
         break
 
+    self.log.info("about to choose random number")
     top_story_id = random.randint(0, len(item_positions)-1)
+    self.log.info("here's a random number: %s", random.randint(0, len(item_positions)-1))
     top_entry = rssfeed.entries[top_story_id]
     top_story_y = item_positions[top_story_id]   
     self.slider.set_position(945, top_story_y-12)
