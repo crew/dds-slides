@@ -1,4 +1,3 @@
-# To run as oneslide within slide 5 WD: tar -pvczf bundle.tar.gz .; /opt/local/bin/python2.6 ~/frontend/src/dds.py --oneslide 5
 # vim: set shiftwidth=4 tabstop=4 softtabstop=4 :
 import clutter
 import baseslide
