@@ -18,6 +18,7 @@ CAM_HEIGHT = 278
 class WebCamera(object):
 
     def __init__(self, slide, url, x, y, width, height, side=TOP):
+        self.texture = None
         self.slide = slide
         self.url = url
         self.x, self.y = x,y
@@ -60,7 +61,7 @@ class WebCamera(object):
         self.slide.group.add(self.pointer)
 
     def refresh(self):
-        self.texture = self.slide.GetTextureFromURL(self.url)
+        self.texture = self.slide.GetTextureFromURL(self.url, self.texture)
         self.texture.set_position(self.x, self.y)
         self.texture.set_size(self.width, self.height)
         self.texture.set_depth(1)
