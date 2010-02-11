@@ -1,3 +1,4 @@
+# To run as oneslide within slide 5 WD: tar -pvczf bundle.tar.gz .; /opt/local/bin/python2.6 ~/frontend/src/dds.py --oneslide 5
 # vim: set shiftwidth=4 tabstop=4 softtabstop=4 :
 import clutter
 import baseslide
@@ -6,35 +7,16 @@ import logging
 import urllib
 import datetime
 import random
-
-from vobject import iCalendar
+import vobject
+import pytz
 
 CALURL='http://www.trumba.com/calendars/northeastern-events.ics'
-
 
 class CampusCalendar(baseslide.BaseSlide):
     def __init__(self):
         self.calendar = None
         self.events = None
         self.refresh()
-
-    def dtstart(self, vevent):
-        return dateutil.parser.parse(str(vevent['dtstart']))
-
-    def dtend(self, vevent):
-        return dateutil.parser.parse(str(vevent['dtend']))
-
-    def location(self, vevent):
-        if not vevent.has_key('location'):
-            return ""
-        else:
-            return vevent['location']
-
-    def description(self, vevent):
-        if not vevent.has_key('description'):
-            return vevent['summary']
-        else:
-            return vevent['description']
 
     def event_beforeshow(self):
         self.refresh()
@@ -43,32 +25,32 @@ class CampusCalendar(baseslide.BaseSlide):
         if self.calendar is None:
             tmpfilename = 'cache.ics'
             ics = urllib.urlretrieve(CALURL, tmpfilename)
-            self.calendar = iCalendar.from_string(open(tmpfilename).read())
+            self.calendar = vobject.readOne(open(tmpfilename).read())
 
     def filter_events(self):
         """Filter events not occuring within 20 days of now."""
-        if self.events is None:
-            # Filtering out those not occuring within 20 days of now,
-            # or that occured in the past.
-            today = datetime.datetime.today()
-            delta = datetime.timedelta(days=5)
-            self.events = []
-            for e in self.calendar.walk('vevent'):
-                if ((self.dtstart(e) > today) and
-                    (self.dtstart(e) < (today + delta))):
-                    self.events.append(e)
+        today = datetime.datetime.now(pytz.timezone('US/Eastern'))
+        delta = datetime.timedelta(days=20)
+
+        self.events = []
+
+        for event in self.calendar.components():
+	        if (hasattr(event, 'description') and
+					    hasattr(event, 'summary') and
+					    hasattr(event, 'location') and
+				      hasattr(event.dtstart.value, 'hour') and
+				      event.dtstart.value >= today and
+				      event.dtstart.value <= (today + delta) and
+					    len(event.description.value) >= 100):
+				      self.events.append(event)
 
     def refresh(self):
         self.download_parse()
         self.filter_events()
         event = random.choice(self.events)
 
-        # Some of these events don't have descriptions or locations associated
-        # with them. Set as empty string.
-        if not event.has_key('description'):
-            event['description'] = ''
-        if not event.has_key('location'):
-            event['location'] = ''
+        start_date = datetime.datetime.strftime(event.dtstart.value, '%A, %m/%d %I:%M%p')
+        end_date = datetime.datetime.strftime(event.dtend.value, '%A, %m/%d %I:%M%p')
 
         baseslide.BaseSlide.__init__(self)
         bg = clutter.Texture('bg.png')
@@ -84,47 +66,28 @@ class CampusCalendar(baseslide.BaseSlide):
         self.group.add(bg)
 
         eventtitle = clutter.Text()
-        eventtitle.set_text(event['summary'])
-        eventtitle.set_font_name('serif 48')
-        eventtitle.set_color(clutter.color_from_string('#000'))
+        eventtitle.set_text(event.summary.value)
+        eventtitle.set_font_name('Large Frys 48')
+        eventtitle.set_color(clutter.color_from_string('#ffffff'))
         eventtitle.set_size(1600, 1)
-        eventtitle.set_position(250, 370)
+        eventtitle.set_position(200, 400)
         eventtitle.set_ellipsize(3)
         eventtitle.set_depth(3)
         self.group.add(eventtitle)
 
-        locationline = clutter.Text()
-        locationline.set_text(event['location'])
-        locationline.set_font_name('serif 24')
-        locationline.set_color(clutter.color_from_string('#000'))
-        locationline.set_size(1600, 1)
-        locationline.set_position(250, 450)
-        locationline.set_ellipsize(3)
-        locationline.set_depth(3)
-        self.group.add(locationline)
-
-        monthline = clutter.Text()
-        monthline.set_text(self.dtstart(event).strftime('%b'))
-        monthline.set_font_name('serif 24')
-        monthline.set_color(clutter.color_from_string('#ffffff'))
-        monthline.set_position(105, 380)
-        monthline.set_size(250, 370)
-        monthline.set_depth(3)
-        self.group.add(monthline)
-
-        dayline = clutter.Text()
-        dayline.set_text(self.dtstart(event).strftime('%d'))
-        dayline.set_font_name('serif 48')
-        dayline.set_color(clutter.color_from_string('#ffffff'))
-        dayline.set_position(95, 420)
-        dayline.set_size(200, 400)
-        dayline.set_depth(3)
-        self.group.add(dayline)
+        dateline = clutter.Text()
+        dateline.set_text(start_date + ' - ' + end_date)
+        dateline.set_font_name('Large Frys 24')
+        dateline.set_color(clutter.color_from_string('#ffffff'))
+        dateline.set_position(200, 300)
+        dateline.set_size(250, 1)
+        dateline.set_depth(3)
+        self.group.add(dateline)
 
         descblock = clutter.Text()
-        descblock.set_text(event['description'])
-        descblock.set_font_name('serif 24')
-        descblock.set_color(clutter.color_from_string('#000'))
+        descblock.set_text(event.description.value)
+        descblock.set_font_name('Large Frys 24')
+        descblock.set_color(clutter.color_from_string('#ffffff'))
         descblock.set_position(85, 530)
         descblock.set_size(1800, 400)
         descblock.set_ellipsize(3)
