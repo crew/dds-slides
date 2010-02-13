@@ -41,7 +41,7 @@ import json
 
 gflags.DEFINE_string('authcookiefile', '~/.dds/authcookies.dat',
                      'Path to authcookiefile')
-gflags.DEFINE_string('baseurl', 'http://dds-master.ccs.neu.edu/dds/',
+gflags.DEFINE_string('baseurl', 'http://dds-dev.ccs.neu.edu/dds/',
                      'DDS Server Base URL')
 FLAGS = gflags.FLAGS
 logging.basicConfig(level=logging.INFO)
