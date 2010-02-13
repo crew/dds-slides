@@ -5,28 +5,24 @@ import config
 import logging
 import urllib
 import datetime
-import dateutil.parser
 import random
-import pytz
-from icalendar import Calendar
 
 CAL = 'http://www.google.com/calendar/ical/acm@ccs.neu.edu/public/basic.ics'
 
 class ACMCalendar(baseslide.BaseSlide):
-    def dtstart(self, vevent):
-        return dateutil.parser.parse(str(vevent['dtstart']))
-
-    def dtend(self, vevent):
-        return dateutil.parser.parse(str(vevent['dtend']))
-
     def __init__(self):
         baseslide.BaseSlide.__init__(self)
-	    # Grab the .ics and parse it.
-        ics = urllib.urlretrieve(CAL, 'cache.ics')
-        self.calendar = Calendar.from_string(open('cache.ics', 'rb').read())
-        self.event_beforeshow(first=True)
+        self.ourpath = __file__
+        self.setup()
 
-    def draw_bg(self):
+    def setup(self):
+        self.setupbg()
+        self.download_fetch_ical(CAL)
+        self.update_calevents()
+        self.setuptext()
+        self.setupanimation()
+
+    def setupbg(self):
         # Draw images
         bg = clutter.Rectangle()
         bg.set_color(clutter.color_from_string('#6a9cd2'))
@@ -59,50 +55,27 @@ class ACMCalendar(baseslide.BaseSlide):
         stripe.set_depth(3)
         self.group.add(stripe)
    
-    def event_beforeshow(self, first=False):
-        e = self.pick_event()
-        if first:
-            self.draw_bg()
-            self.setupanimation()
-            self.draw_event(e)
-        self.fill_event(e)
+    def event_beforeshow(self):
+        self.set_event(random.choice(self.calevents))
+
+    def event_aftershow(self):
         self.tm.start()
     
     def event_afterhide(self):
         self.tm.stop()
 
-    def pick_event(self):
-        # Filtering out those not occuring within 10 days of now, or that 
-        # occured in the past.	
-        now = datetime.datetime.now(pytz.utc)
-        delta = datetime.timedelta(days=10)
-        all_events = []
-        for x in self.calendar.walk('vevent'):
-            try:
-                if self.dtstart(x) > now:
-                    all_events.append(x)
-            except:
-                pass
-        e = random.choice(all_events)
-        del all_events
-        return e
+    def set_event(self, event):
+        start_date = datetime.datetime.strftime(event.dtstart.value,
+                                                '%A, %m/%d %I:%M%p')
+        end_date = datetime.datetime.strftime(event.dtend.value, '%I:%M%p')
+        self.eventtitle.set_text(event.summary.value)
+        self.descblock.set_text(event.description.value)
+        self.dateline.set_text(event.dtstart.value.strftime('%B %e %Y'))
+        self.timeline.set_text('%s, %s'
+                               % (event.dtstart.value.strftime('%I:%M %p'),
+                                  event.location.value))
 
-    def fill_event(self, event):
-        # Some of these events don't have descriptions or locations associated
-        # with them. Set as empty string.
-        if not event.has_key('description'):
-            event['description'] = ''
-
-        if not event.has_key('location'):
-            event['location'] = ''
-
-        self.eventtitle.set_text(event['summary'])
-        self.descblock.set_text(event['description'])
-        self.dateline.set_text(self.dtstart(event).strftime('%B %e %Y'))
-        self.timeline.set_text(self.dtstart(event).strftime('%I:%M %p')
-                          + ', ' + event['location'])
-
-    def draw_event(self, event):
+    def setuptext(self):
         self.eventtitle = clutter.Text()
         self.eventtitle.set_font_name('serif 58')
         self.eventtitle.set_color(clutter.color_from_string('#ffffff'))
