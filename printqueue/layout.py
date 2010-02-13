@@ -38,15 +38,17 @@ class PrintDisplay(baseslide.BaseSlide):
     self.group.add(self.checkmark)
 
   def event_beforeshow(self):
-    self.refresh(self.dataURL)
-  
-  def refresh(self, dataURL):
-    self.parsedata(dataURL)
+    logging.debug('printqueue beforeshow')
+    self.parsedata(self.dataURL)
+    logging.debug('printqueue makeslide')
     self.makeslide()
+    logging.debug('printqueue makeslide')
     self.render()
 
   def event_afterhide(self):
+    self.group.remove(self.rowContainer)
     self.rowContainer.destroy()
+    del self.rowContainer
     for x in self.rows:
       self.rows.remove(x)
       del x
@@ -74,7 +76,6 @@ class PrintDisplay(baseslide.BaseSlide):
 
 
   def add_entry_group(self, entry, starty, width=SCREEN_WIDTH):
-
     # a group which stores all the elements of this entry
     # (that is, it stores all the elements
     container = clutter.Group()
@@ -188,7 +189,6 @@ class PrintDisplay(baseslide.BaseSlide):
   def render(self):
     """Renders the rows and colums from the rows object in this slide."""
     self.rowContainer = clutter.Group()
-
     # Make the title
     title = "Print Queue for %s" % self.data["status"][2]["name"]
     feedtitleActor = clutter.Text()
@@ -197,7 +197,6 @@ class PrintDisplay(baseslide.BaseSlide):
     feedtitleActor.set_color(clutter.color_from_string("black"))
     feedtitleActor.set_size(SCREEN_WIDTH, 150)
     feedtitleActor.set_position(290, 50)
-
     self.rowContainer.add(feedtitleActor)
 
     for row in self.rows:
