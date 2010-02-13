@@ -33,6 +33,7 @@ class ACMCalendar(baseslide.BaseSlide):
  
         self.sunbeams = clutter.Texture('sunbeams.png')
         self.sunbeams.set_position(-800, -500)
+        self.sunbeams.set_size(4000, 4000)
         self.sunbeams.set_depth(2)
         self.group.add(self.sunbeams)
 
