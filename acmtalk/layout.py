@@ -65,14 +65,12 @@ class ACMCalendar(baseslide.BaseSlide):
         self.tm.stop()
 
     def set_event(self, event):
-        start_date = datetime.datetime.strftime(event.dtstart.value,
-                                                '%A, %m/%d %I:%M%p')
-        end_date = datetime.datetime.strftime(event.dtend.value, '%I:%M%p')
+        startdt = event.dtstart.value.astimezone(self.localtime)
         self.eventtitle.set_text(event.summary.value)
         self.descblock.set_text(event.description.value)
-        self.dateline.set_text(event.dtstart.value.strftime('%B %e %Y'))
+        self.dateline.set_text(startdt.strftime('%B %e %Y'))
         self.timeline.set_text('%s, %s'
-                               % (event.dtstart.value.strftime('%I:%M %p'),
+                               % (startdt.strftime('%I:%M %p'),
                                   event.location.value))
 
     def setuptext(self):

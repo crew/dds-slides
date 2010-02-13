@@ -68,9 +68,10 @@ class CampusCalendar(baseslide.BaseSlide):
         self.set_event(random.choice(self.calevents))
 
     def set_event(self, event):
-        start_date = datetime.datetime.strftime(event.dtstart.value,
-                                                '%A, %m/%d %I:%M%p')
-        end_date = datetime.datetime.strftime(event.dtend.value, '%I:%M%p')
+        startdt = event.dtstart.value.astimezone(self.localtime)
+        enddt = event.dtend.value.astimezone(self.localtime)
+        start_date = startdt.strftime('%A, %m/%d %I:%M%p')
+        end_date = enddt.strftime('%I:%M%p')
         self.eventtitle.set_text(event.summary.value)
         self.dateline.set_markup('<i>%s - %s</i>' % (start_date, end_date))
         self.descblock.set_text(event.description.value)
