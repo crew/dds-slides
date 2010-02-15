@@ -1,11 +1,10 @@
 import clutter
-import pango
 import sys
-import cgi
 import feedparser
 import baseslide
 import re
 import random
+import gobject
 
 class SlashdotDisplay(baseslide.BaseSlide):
   def __init__(self, feedURL):
@@ -29,12 +28,15 @@ class SlashdotDisplay(baseslide.BaseSlide):
     self.group.add(self.slider)
 
   def event_beforeshow(self):
-    self.refresh(self.feedURL)
+    self.refresh()
 
-  def refresh(self, feedURL):
+  def event_aftershow(self):
+    gobject.timeout_add(5000, self.refresh)
+
+  def refresh(self):
     for x in self.rssitems:
       self.group.remove(x)
-    self.addrss(feedURL)
+    self.addrss(self.feedURL)
 
   def addTopStoryTitle(self, topstorytitle):
     title = clutter.Text()
