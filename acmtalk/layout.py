@@ -30,7 +30,7 @@ class ACMCalendar(baseslide.BaseSlide):
         bg.set_position(0, 0)
         bg.set_depth(1)
         self.group.add(bg)
- 
+
         self.sunbeams = clutter.Texture('sunbeams.png')
         self.sunbeams.set_position(-800, -500)
         self.sunbeams.set_size(4000, 4000)
@@ -55,13 +55,13 @@ class ACMCalendar(baseslide.BaseSlide):
         stripe.set_opacity(30)
         stripe.set_depth(3)
         self.group.add(stripe)
-   
+
     def event_beforeshow(self):
         self.set_event(random.choice(self.calevents))
 
     def event_aftershow(self):
         self.tm.start()
-    
+
     def event_afterhide(self):
         self.tm.stop()
 
@@ -76,24 +76,24 @@ class ACMCalendar(baseslide.BaseSlide):
 
     def setuptext(self):
         self.eventtitle = clutter.Text()
-        self.eventtitle.set_font_name('serif 58')
+        self.eventtitle.set_font_name('Garuda 62')
         self.eventtitle.set_color(clutter.color_from_string('#ffffff'))
         self.eventtitle.set_size(1920, 200)
-        self.eventtitle.set_position(10, 290)
+        self.eventtitle.set_position(20, 290)
         self.eventtitle.set_depth(3)
         self.group.add(self.eventtitle)
- 
+
         self.descblock = clutter.Text()
-        self.descblock.set_font_name('serif 24')
+        self.descblock.set_font_name('Garuda 24')
         self.descblock.set_color(clutter.color_from_string('#ffffff'))
         self.descblock.set_position(20, 470)
-        self.descblock.set_size(1200, 500)
+        self.descblock.set_size(1850, 500)
         self.descblock.set_depth(3)
         self.descblock.set_line_wrap(True)
         self.group.add(self.descblock)
 
         self.dateline = clutter.Text()
-        self.dateline.set_font_name('serif 60')
+        self.dateline.set_font_name('Garuda 60')
         self.dateline.set_color(clutter.color_from_string('#ffffff'))
         self.dateline.set_position(950, 40)
         self.dateline.set_size(820, 300)
@@ -101,7 +101,7 @@ class ACMCalendar(baseslide.BaseSlide):
         self.group.add(self.dateline)
 
         self.timeline = clutter.Text()
-        self.timeline.set_font_name('serif 48')
+        self.timeline.set_font_name('Garuda 48')
         self.timeline.set_color(clutter.color_from_string('#ffffff'))
         self.timeline.set_position(950, 150)
         self.timeline.set_size(1200, 300)
@@ -117,7 +117,7 @@ class ACMCalendar(baseslide.BaseSlide):
         self.behaviour.set_center(int(self.sunbeams.get_width()/2),
                                   int(self.sunbeams.get_height()/2), 0)
         self.behaviour.apply(self.sunbeams)
-    
+
 
 app = ACMCalendar()
 slide = app.group
