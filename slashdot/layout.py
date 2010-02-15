@@ -54,6 +54,7 @@ class SlashdotDisplay(baseslide.BaseSlide):
     content.set_text(topstorytext)
     content.set_font_name("serif 21")
     content.set_line_wrap(True)
+    content.set_justify(True)
     content.set_line_wrap_mode(2)
     content.set_color(clutter.color_from_string("black"))
     content.set_position(50, 210 + toptitle.get_height())
