@@ -1,7 +1,7 @@
 import clutter
 import baseslide
 import config
-from threading import Timer
+import gobject
 
 class Unconfigured(baseslide.BaseSlide):
     def __init__(self):
@@ -22,8 +22,7 @@ class Unconfigured(baseslide.BaseSlide):
         self.setuptext()
 
     def event_aftershow(self):
-        t = Timer(5.0, self.animateitems)
-        t.start()
+        gobject.timeout_add(5000, self.animateitems)
 
     def setupbg(self):
         self.bg.set_size(1920, 1080)

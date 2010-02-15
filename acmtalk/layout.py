@@ -90,6 +90,7 @@ class ACMCalendar(baseslide.BaseSlide):
         self.descblock.set_size(1850, 500)
         self.descblock.set_depth(3)
         self.descblock.set_line_wrap(True)
+        self.descblock.set_justify(True)
         self.group.add(self.descblock)
 
         self.dateline = clutter.Text()
