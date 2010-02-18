@@ -57,7 +57,6 @@ class ACMCalendar(baseslide.BaseSlide):
         self.group.add(stripe)
 
     def event_beforeshow(self):
-        logging.info(self.calevents)
         self.set_event(random.choice(self.calevents))
 
     def event_aftershow(self):
