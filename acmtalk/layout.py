@@ -69,10 +69,12 @@ class ACMCalendar(baseslide.BaseSlide):
         startdt = event.dtstart.value.astimezone(self.localtime)
         self.eventtitle.set_text(event.summary.value)
         self.descblock.set_text(event.description.value)
-        self.dateline.set_text(startdt.strftime('%B %e %Y'))
+        self.dateline.set_text(startdt.strftime('%B %e, %Y'))
+        self.dateline.set_x(1880-self.dateline.get_width())
         self.timeline.set_text('%s, %s'
                                % (startdt.strftime('%I:%M %p'),
                                   event.location.value))
+        self.timeline.set_x(1880-self.timeline.get_width())
 
     def setuptext(self):
         self.eventtitle = clutter.Text()
@@ -81,23 +83,25 @@ class ACMCalendar(baseslide.BaseSlide):
         self.eventtitle.set_size(1920, 200)
         self.eventtitle.set_position(20, 290)
         self.eventtitle.set_depth(3)
+        self.eventtitle.set_ellipsize(3)
         self.group.add(self.eventtitle)
 
         self.descblock = clutter.Text()
         self.descblock.set_font_name('sans 24')
         self.descblock.set_color(clutter.color_from_string('#ffffff'))
         self.descblock.set_position(20, 470)
-        self.descblock.set_size(1850, 500)
+        self.descblock.set_size(1850, 580)
         self.descblock.set_depth(3)
         self.descblock.set_line_wrap(True)
         self.descblock.set_justify(True)
+        self.descblock.set_ellipsize(3)
         self.group.add(self.descblock)
 
         self.dateline = clutter.Text()
         self.dateline.set_font_name('sans 60')
         self.dateline.set_color(clutter.color_from_string('#ffffff'))
         self.dateline.set_position(950, 40)
-        self.dateline.set_size(820, 300)
+        self.dateline.set_height(300)
         self.dateline.set_depth(3)
         self.group.add(self.dateline)
 
@@ -105,7 +109,7 @@ class ACMCalendar(baseslide.BaseSlide):
         self.timeline.set_font_name('sans 48')
         self.timeline.set_color(clutter.color_from_string('#ffffff'))
         self.timeline.set_position(950, 150)
-        self.timeline.set_size(1200, 300)
+        self.timeline.set_height(300)
         self.timeline.set_depth(3)
         self.group.add(self.timeline)
 
