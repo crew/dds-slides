@@ -18,7 +18,7 @@ class ACMCalendar(baseslide.BaseSlide):
     def setup(self):
         self.setupbg()
         self.download_fetch_ical(CAL)
-        self.update_calevents()
+        self.update_calevents(within=100)
         self.setuptext()
         self.setupanimation()
 
@@ -57,6 +57,7 @@ class ACMCalendar(baseslide.BaseSlide):
         self.group.add(stripe)
 
     def event_beforeshow(self):
+        logging.info(self.calevents)
         self.set_event(random.choice(self.calevents))
 
     def event_aftershow(self):
@@ -76,7 +77,7 @@ class ACMCalendar(baseslide.BaseSlide):
 
     def setuptext(self):
         self.eventtitle = clutter.Text()
-        self.eventtitle.set_font_name('Garuda 62')
+        self.eventtitle.set_font_name('sans 62')
         self.eventtitle.set_color(clutter.color_from_string('#ffffff'))
         self.eventtitle.set_size(1920, 200)
         self.eventtitle.set_position(20, 290)
@@ -84,7 +85,7 @@ class ACMCalendar(baseslide.BaseSlide):
         self.group.add(self.eventtitle)
 
         self.descblock = clutter.Text()
-        self.descblock.set_font_name('Garuda 24')
+        self.descblock.set_font_name('sans 24')
         self.descblock.set_color(clutter.color_from_string('#ffffff'))
         self.descblock.set_position(20, 470)
         self.descblock.set_size(1850, 500)
@@ -94,7 +95,7 @@ class ACMCalendar(baseslide.BaseSlide):
         self.group.add(self.descblock)
 
         self.dateline = clutter.Text()
-        self.dateline.set_font_name('Garuda 60')
+        self.dateline.set_font_name('sans 60')
         self.dateline.set_color(clutter.color_from_string('#ffffff'))
         self.dateline.set_position(950, 40)
         self.dateline.set_size(820, 300)
@@ -102,7 +103,7 @@ class ACMCalendar(baseslide.BaseSlide):
         self.group.add(self.dateline)
 
         self.timeline = clutter.Text()
-        self.timeline.set_font_name('Garuda 48')
+        self.timeline.set_font_name('sans 48')
         self.timeline.set_color(clutter.color_from_string('#ffffff'))
         self.timeline.set_position(950, 150)
         self.timeline.set_size(1200, 300)
