@@ -12,6 +12,7 @@ class SlashdotDisplay(baseslide.BaseSlide):
     baseslide.BaseSlide.__init__(self)
     self.feedURL = feedURL
     self.rssitems = []
+    self.titleitems = []
     self.setupBackground()
     self.setupSlider()
     self.addrss(feedURL)
@@ -31,10 +32,33 @@ class SlashdotDisplay(baseslide.BaseSlide):
     self.refresh()
 
   def event_aftershow(self):
-    gobject.timeout_add(5000, self.refresh)
+    gobject.timeout_add(5000, self.update_top_story_with_slide)
+
+  def update_top_story_with_slide(self):
+    top_story_id = random.randint(0, len(self.item_positions)-1)
+    top_entry = self.rssfeed.entries[top_story_id]
+    top_story_y = self.item_positions[top_story_id]
+    timeline = clutter.Timeline(500)
+    alpha = clutter.Alpha(timeline, clutter.LINEAR)
+    path = clutter.Path()
+    path.add_move_to(945, self.slider.get_y())
+    path.add_line_to(945, int(top_story_y-12))
+    self.move_slider_behavior = clutter.BehaviourPath(alpha, path)
+    self.move_slider_behavior.apply(self.slider)
+    timeline.connect('completed', lambda x:
+                                  self.update_top_story(top_entry))
+    timeline.start()
+
+  def update_top_story(self, top_entry):
+    for x in self.titleitems:
+       self.group.remove(x)
+    self.addTopStory(self.RemoveHTMLTags(top_entry.title),
+                     self.RemoveHTMLTags(top_entry.summary))
 
   def refresh(self):
     for x in self.rssitems:
+      self.group.remove(x)
+    for x in self.titleitems:
       self.group.remove(x)
     self.addrss(self.feedURL)
 
@@ -48,7 +72,8 @@ class SlashdotDisplay(baseslide.BaseSlide):
     title.set_width(850)
     title.set_color(clutter.color_from_string("black"))
     title.set_position(50, 200)
-    self.rssitems.append(title)
+    self.titleitems.append(title)
+    self.group.add(title)
     return title
 
   def addTopStoryText(self, topstorytext, toptitle):
@@ -63,30 +88,32 @@ class SlashdotDisplay(baseslide.BaseSlide):
     content.set_height(1080-260-toptitle.get_height())
     content.set_width(850)
     content.set_ellipsize(3) #Omit characters at the end of the text
-    self.rssitems.append(content)
+    self.group.add(content)
+    self.titleitems.append(content)
 
   def addTopStory(self, title, body):
+    self.titleitems = []
     self.addTopStoryText(body, self.addTopStoryTitle(title))
 
   def addrss(self, feedURL):
     """ Adds the RSS feed information to this slide. """
     #TODO: ERROR CHECKING: MAKE SURE WE DON'T EXPLODE WITH A BAD FEED
-    rssfeed = feedparser.parse(feedURL)
+    self.rssfeed = feedparser.parse(feedURL)
     self.rssitems = []
 
     y = 200
-    item_positions = []
-    for entry in rssfeed.entries:
+    self.item_positions = []
+    for entry in self.rssfeed.entries:
       dy, added = self.add_entry_group(entry, y)
       if added:
-        item_positions.append(y)
+        self.item_positions.append(y)
         y += dy + 20
       else:
         break
 
-    top_story_id = random.randint(0, len(item_positions)-1)
-    top_entry = rssfeed.entries[top_story_id]
-    top_story_y = item_positions[top_story_id]   
+    top_story_id = random.randint(0, len(self.item_positions)-1)
+    top_entry = self.rssfeed.entries[top_story_id]
+    top_story_y = self.item_positions[top_story_id]   
     self.slider.set_position(945, top_story_y-12)
     self.addTopStory(self.RemoveHTMLTags(top_entry.title),
                      self.RemoveHTMLTags(top_entry.summary))
