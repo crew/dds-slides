@@ -18,7 +18,7 @@ class ACMCalendar(baseslide.BaseSlide):
     def setup(self):
         self.setupbg()
         self.download_fetch_ical(CAL)
-        self.update_calevents()
+        self.update_calevents(within=100)
         self.setuptext()
         self.setupanimation()
 
@@ -57,6 +57,7 @@ class ACMCalendar(baseslide.BaseSlide):
         self.group.add(stripe)
 
     def event_beforeshow(self):
+        logging.info(self.calevents)
         self.set_event(random.choice(self.calevents))
 
     def event_aftershow(self):
