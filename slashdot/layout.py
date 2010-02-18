@@ -93,7 +93,9 @@ class SlashdotDisplay(baseslide.BaseSlide):
 
   def addTopStory(self, title, body):
     self.titleitems = []
-    self.addTopStoryText(body, self.addTopStoryTitle(title))
+    self.addTopStoryText(body.replace("\n", " ").replace(
+                            "Read more of this story at Slashdot.", ""),
+                         self.addTopStoryTitle(title))
 
   def addrss(self, feedURL):
     """ Adds the RSS feed information to this slide. """
