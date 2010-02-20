@@ -31,17 +31,14 @@ class SlashdotDisplay(baseslide.BaseSlide):
   def event_beforeshow(self):
     self.refresh()
 
-  def event_aftershow(self):
-    gobject.timeout_add(5000, self.update_top_story_with_slide)
-
-  def update_top_story_with_slide(self):
+  def event_loop(self):
     top_story_id = random.randint(0, len(self.item_positions)-1)
     top_entry = self.rssfeed.entries[top_story_id]
     top_story_y = self.item_positions[top_story_id]
     timeline = clutter.Timeline(500)
     alpha = clutter.Alpha(timeline, clutter.LINEAR)
     path = clutter.Path()
-    path.add_move_to(945, self.slider.get_y())
+    path.add_move_to(945, int(self.slider.get_y()))
     path.add_line_to(945, int(top_story_y-12))
     self.move_slider_behavior = clutter.BehaviourPath(alpha, path)
     self.move_slider_behavior.apply(self.slider)
