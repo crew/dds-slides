@@ -33,6 +33,11 @@ class PrintDisplay(baseslide.BaseSlide):
   def event_beforeshow(self):
     self.refresh(self.dataURL)
 
+  def event_loop(self):
+    del self.rows
+    self.rows = []
+    self.refresh(self.dataURL)
+
   def refresh(self, dataURL):
     self.group.remove_all()
     self.group.add(self.checkmark)

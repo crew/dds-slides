@@ -87,6 +87,10 @@ class CampusCamSlide(baseslide.BaseSlide):
         self.cameras = [WebCamera(self, url, x, y, CAM_WIDTH, CAM_HEIGHT, side)
                         for (url, x, y, side) in locations]
 
+    def event_loop(self):
+        for camera in self.cameras:
+            camera.refresh()
+
     def event_beforeshow(self):
         for camera in self.cameras:
             camera.refresh()
