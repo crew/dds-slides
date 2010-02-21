@@ -60,7 +60,7 @@ class AuthedActivity(object):
     rhandler = urllib2.HTTPRedirectHandler()
     self.opener = urllib2.build_opener(handler)
     self.opener.add_handler(rhandler)
-  
+
   def loadcookies(self):
     try:
       self.cookiejar.load()
@@ -75,7 +75,7 @@ class AuthedActivity(object):
     print 'Login required! Please provide Django Creds.'
     username = raw_input('Username: ')
     password = getpass.getpass('Password: ')
-    self.geturl(loginurl, {'username':username, 'password':password}, 
+    self.geturl(loginurl, {'username':username, 'password':password},
                 recurse=False)
 
   def geturl(self, url, postdict=None, recurse=True):
@@ -97,7 +97,7 @@ class AuthedActivity(object):
   def encode_multipart_formdata(self, fields, files):
     """From: http://code.activestate.com/recipes/146306/
     fields is a sequence of (name, value) elements for regular form fields.
-    files is a sequence of (name, filename, value) elements for data to be 
+    files is a sequence of (name, filename, value) elements for data to be
     uploaded as files
     Return (content_type, body) ready for httplib.HTTP instance
     """
@@ -137,7 +137,7 @@ class AuthedActivity(object):
         time.sleep(0.1)
         f = self.opener.open(req)
         time.sleep(0.1)
-        
+
         returnedurl = f.geturl()
         if '/accounts/login/' in returnedurl and recurse:
           self.doauth(returnedurl)
@@ -145,11 +145,17 @@ class AuthedActivity(object):
         else:
           return f
       except Exception, e:
-        print e
-        print 'Upload Failed, Authentication required!'
-        time.sleep(1)
-        self.doauth(os.path.join(FLAGS.baseurl, 'accounts', 'login/'))
-        return self.post_multipart(url, fields, files, recurse)
+        if e.code:
+          print 'Server failure!'
+          print '------------------------------------------'
+          print e.read()
+          return
+        else:
+          print e
+          print 'Upload Failed, Authentication required!'
+          time.sleep(1)
+          self.doauth(os.path.join(FLAGS.baseurl, 'accounts', 'login/'))
+          return self.post_multipart(url, fields, files, recurse)
     finally:
       self.cookiejar.save()
 
@@ -187,7 +193,7 @@ class AuthedActivity(object):
       return self.post_multipart(posturl, fields, files)
     except urllib2.HTTPError, e:
       print 'Error encountered %s' % e.read()
- 
+
 
 class ManifestValidator(object):
   def __init__(self, manifestpath):
@@ -264,7 +270,7 @@ def createAllBundles():
       logging.debug('Skipping non-dir %s' % x)
     elif not os.path.exists(os.path.join(x, 'manifest.js')):
       logging.debug('No manifest in %s' % x)
-    else: 
+    else:
       makeBundle(x)
 
 def usage(foo=''):
@@ -325,7 +331,7 @@ if __name__ == '__main__':
       print a.create_slide(bundle).read()
     elif mode == 'list' and len(args) == 1:
       slides = a.get_slide_listing()
-      pprint_table(sys.stdout, slides)    
+      pprint_table(sys.stdout, slides)
     else:
       raise Exception, 'No commands matched'
   except Exception, e:
