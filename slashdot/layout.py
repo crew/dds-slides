@@ -5,12 +5,17 @@ import baseslide
 import re
 import random
 import gobject
+import datetime
+import os
+import urllib
+import logging
 
 class SlashdotDisplay(baseslide.BaseSlide):
   def __init__(self, feedURL):
     """ Initializes the stage and score for this slide. """
     baseslide.BaseSlide.__init__(self)
     self.feedURL = feedURL
+    self.rssfeed = None
     self.rssitems = []
     self.titleitems = []
     self.setupBackground()
@@ -94,10 +99,31 @@ class SlashdotDisplay(baseslide.BaseSlide):
                             "Read more of this story at Slashdot.", ""),
                          self.addTopStoryTitle(title))
 
+  def feedpath(self):
+    return os.path.join(os.path.dirname(__file__), 'slashdot.rss')
+
+  def oldfeed(self):
+    if not os.path.exists(self.feedpath()):
+      return True
+    now = datetime.datetime.now()
+    stats = os.stat(self.feedpath())
+    lmdate = datetime.datetime.fromtimestamp(stats[8])
+    delta = datetime.timedelta(hours=1)
+    if not lmdate > (now-delta):
+      return True
+
+  def download_fetch_feed(self, feedURL):
+    oldfeed = self.oldfeed()
+    if oldfeed:
+      logging.debug('Fetching feed URL: %s' % feedURL)
+      urllib.urlretrieve(feedURL, self.feedpath())
+    if self.rssfeed is None or oldfeed:
+      self.rssfeed = feedparser.parse(open(self.feedpath()))
+
   def addrss(self, feedURL):
     """ Adds the RSS feed information to this slide. """
     #TODO: ERROR CHECKING: MAKE SURE WE DON'T EXPLODE WITH A BAD FEED
-    self.rssfeed = feedparser.parse(feedURL)
+    self.download_fetch_feed(feedURL)
     self.rssitems = []
 
     y = 200
