@@ -47,8 +47,11 @@ class PrintDisplay(baseslide.BaseSlide):
     self.render()
 
   def event_afterhide(self):
-    del self.rows
-    self.rows = []
+    try:
+      del self.rows
+      self.rows = []
+    except:
+      logging.exception('encountered error in afterhide')
 
   def parsedata(self, url):
     """ Parse data from the given URL, and populate data objects
