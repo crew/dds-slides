@@ -1,4 +1,4 @@
-#!/usr/bin/python
+#!/usr/bin/env python
 """Utility for managing slides.
 
   * Get a list of slides on the server:
