@@ -246,6 +246,7 @@ def makeBundle(directory):
   try:
     logging.info('Attempting to bundle %s' % directory)
     os.chdir(directory)
+    os.system('/usr/bin/env git clean -f -x')
     files = glob('*')
     if 'manifest.js' not in files:
       logging.error("no manifest file in \"%s\", aborting." % directory)
