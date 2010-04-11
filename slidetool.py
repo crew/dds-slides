@@ -145,7 +145,12 @@ class AuthedActivity(object):
         else:
           return f
       except Exception, e:
-        if e.code:
+        code = False
+        try:
+          code = e.code
+        except:
+          pass
+        if code:
           print 'Server failure!'
           print '------------------------------------------'
           print e.read()
@@ -336,4 +341,5 @@ if __name__ == '__main__':
     else:
       raise Exception, 'No commands matched'
   except Exception, e:
+    print e
     usage()
