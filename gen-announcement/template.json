@@ -1,0 +1,8 @@
+[{ "name":"name",
+   "caption":"Slide Title",
+   "type":"text",
+   "field_size":"s" },
+ { "name":"body",
+   "caption":"Message",
+   "type":"text",
+   "field_size":"l" }]
