@@ -16,7 +16,7 @@ import random
 
 WEEKDAYS = ('Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday')
 TIMES = re.compile('a\.*m\.*$|p\.*m\.*$|[nN]oon\.*$')
-FEEDURL = 'http://pipes.yahoo.com/pipes/pipe.run?_id=85b5990d256f3bc93e8f82002a73fa46&_render=rss'
+FEEDURL = 'http://huntnewsnu.com/category/crime-log/feed/'
 
 class CrimeLog(baseslide.BaseSlide):
     def __init__(self):
@@ -41,7 +41,7 @@ class CrimeLog(baseslide.BaseSlide):
         if now_date - feed_date >= delta:
             return True
 
-    def download_fetch_feed(self, feed_url):
+    def download_fetch_feed(self):
         feed_is_old = self.old_feed()
         if feed_is_old:
             logging.debug('Fetching feed URL: %s' % FEEDURL)
