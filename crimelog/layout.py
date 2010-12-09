@@ -67,9 +67,9 @@ class CrimeLog(baseslide.BaseSlide):
         self.setup_text()
 
     def event_beforeshow(self):
-        self.set_display_item(random.choice(self.latest_entries))
+        self.set_entry(random.choice(self.latest_entries))
 
-    def set_display_item(self, item):
+    def set_entry(self, item):
         pass
 
 class CrimeLogData:
