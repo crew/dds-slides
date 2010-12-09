@@ -4,14 +4,15 @@
 A slide for the NUPD Crime Log.
 """
 
-import baseslide
 import os
 import re
+import baseslide
 import clutter
 import logging
 import feedparser
 import datetime
 import urllib
+import random
 
 WEEKDAYS = ('Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday')
 TIMES = re.compile('a\.*m\.*$|p\.*m\.*$|[nN]oon\.*$')
@@ -20,13 +21,12 @@ FEEDURL = 'http://pipes.yahoo.com/pipes/pipe.run?_id=85b5990d256f3bc93e8f82002a7
 class CrimeLog(baseslide.BaseSlide):
     def __init__(self):
         baseslide.BaseSlide.__init__(self)
-        self.our_path = __file__
         self.rss_feed = None
-        self.parsed_latest_items = None
+        self.latest_items = None
         self.setup()
     
     def feed_path(self):
-        return os.path.join(os.path.dirname(self.our_path), 'crime.rss')
+        return os.path.join(os.path.dirname(__file__), 'crime.rss')
 
     def old_feed(self):
         if not os.path.exists(self.feed_path()):
@@ -37,7 +37,7 @@ class CrimeLog(baseslide.BaseSlide):
         current_feed_stats = os.stat(self.feed_path())
         current_feed_datetime = datetime.datetime.fromtimestamp(current_feed_stats[8])
         feed_date = datetime.date(current_feed_datetime.year, current_feed_datetime.month, current_feed_datetime.day)
-        delta = datetime.timedelta(7)
+        delta = datetime.timedelta(1)
         if now_date - feed_date >= delta:
             return True
 
@@ -49,11 +49,28 @@ class CrimeLog(baseslide.BaseSlide):
         if self.rss_feed is None or feed_is_old:
             self.rss_feed = feedparser.parse(open(self.feed_path()))
 
+    def get_latest_items(self):
+        latest_ugly = self.rss_feed.entries[0].content[0].value.split('\n')
+        latest = [self.RemoveHTMLTags(i) for i in latest_ugly]
+        self.latest_items = CrimeLogData(latest).get_entries()
+
+    def setup_text(self):
+        pass
+
+    def setup_background(self):
+        pass
+        
     def setup(self):
         self.download_fetch_feed(FEEDURL)
-        latest_ugly = self.rss_feed.entries[0].content[0].value.split('\n')
-        latest_items = [self.RemoveHTMLTags(i) for i in latest_ugly]
-        self.parsed_latest_items = CrimeLogData(latest_items).get_entries()
+        self.get_latest_items()
+        self.setup_background()
+        self.setup_text()
+
+    def event_beforeshow(self):
+        self.set_display_item(random.choice(self.latest_items))
+
+    def set_display_item(self, item):
+        pass
 
 class CrimeLogData:
     def __init__(self, content):
@@ -87,9 +104,8 @@ class CrimeTime:
         self.text = None
 
 """
-#For testing purposes
 app = CrimeLog()
-for date in app.parsed_latest_items:
+for date in app.latest_items:
     for time in date.times:
         print "%s, %s -- %s\n" % (date.date, time.time, time.text)
 """
