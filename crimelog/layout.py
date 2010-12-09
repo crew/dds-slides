@@ -22,7 +22,7 @@ class CrimeLog(baseslide.BaseSlide):
     def __init__(self):
         baseslide.BaseSlide.__init__(self)
         self.rss_feed = None
-        self.latest_items = None
+        self.latest_entries = None
         self.setup()
     
     def feed_path(self):
@@ -49,10 +49,10 @@ class CrimeLog(baseslide.BaseSlide):
         if self.rss_feed is None or feed_is_old:
             self.rss_feed = feedparser.parse(open(self.feed_path()))
 
-    def get_latest_items(self):
+    def get_latest_entries(self):
         latest_ugly = self.rss_feed.entries[0].content[0].value.split('\n')
         latest = [self.RemoveHTMLTags(i) for i in latest_ugly]
-        self.latest_items = CrimeLogData(latest).get_entries()
+        self.latest_entries = CrimeLogData(latest).get_entries()
 
     def setup_text(self):
         pass
@@ -62,12 +62,12 @@ class CrimeLog(baseslide.BaseSlide):
         
     def setup(self):
         self.download_fetch_feed(FEEDURL)
-        self.get_latest_items()
+        self.get_latest_entries()
         self.setup_background()
         self.setup_text()
 
     def event_beforeshow(self):
-        self.set_display_item(random.choice(self.latest_items))
+        self.set_display_item(random.choice(self.latest_entries))
 
     def set_display_item(self, item):
         pass
@@ -105,7 +105,7 @@ class CrimeTime:
 
 """
 app = CrimeLog()
-for date in app.latest_items:
+for date in app.latest_entries:
     for time in date.times:
         print "%s, %s -- %s\n" % (date.date, time.time, time.text)
 """
