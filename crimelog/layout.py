@@ -5,10 +5,16 @@ Takes Crime Log output in list form (where items in list already have
 HTML stripped out) and produces an object containing relevant data.
 """
 
+import baseslide
+
+
 WEEKDAYS = ('Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday')
 MERIDIEMS = ('a.m.', 'p.m.')
 
-class CrimeLog:
+class CrimeLog(baseslide.Baseslide):
+  pass
+
+class CrimeLogData:
     def __init__(self, content):
         self.content = content
         self.crime_dates = []
@@ -45,7 +51,7 @@ class CrimeTime:
         self.text = None
 
 """
-for date in CrimeLog(feed).get_entries():
+for date in CrimeLogData(feed).get_entries():
     for time in date.times:
         print date.date, time.time, '--', time.text, '\n'
 """
