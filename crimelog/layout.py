@@ -61,7 +61,7 @@ class CrimeLog(baseslide.BaseSlide):
         pass
         
     def setup(self):
-        self.download_fetch_feed(FEEDURL)
+        self.download_fetch_feed()
         self.get_latest_entries()
         self.setup_background()
         self.setup_text()
@@ -103,9 +103,8 @@ class CrimeTime:
         self.time = time
         self.text = None
 
-"""
-app = CrimeLog()
-for date in app.latest_entries:
-    for time in date.times:
-        print "%s, %s -- %s\n" % (date.date, time.time, time.text)
-"""
+if __name__ == '__main__':
+    app = CrimeLog()
+    for date in app.latest_entries:
+        for time in date.times:
+            print "%s, %s -- %s\n" % (date.date, time.time, time.text)
