@@ -55,10 +55,36 @@ class CrimeLog(baseslide.BaseSlide):
         self.latest_entries = CrimeLogData(latest).get_entries()
 
     def setup_text(self):
-        pass
+        self.desc_block = clutter.Text()
+        self.desc_block.set_font_name('Baskerville 30')
+        self.desc_block.set_color(clutter.color_from_string('#ffffff'))
+        self.desc_block.set_position(160, 375)
+        self.desc_block.set_size(1700, 550)
+        self.desc_block.set_ellipsize(3)
+        self.desc_block.set_depth(3)
+        self.desc_block.set_line_wrap(True)
+        self.group.add(self.desc_block)
+
+        self.date_line = clutter.Text()
+        self.date_line.set_font_name('Baskerville 30')
+        self.date_line.set_color(clutter.color_from_string('#ffffff'))
+        self.date_line.set_position(160, 800)
+        self.date_line.set_size(250, 100)
+        self.date_line.set_depth(3)
+        self.group.add(self.date_line)
 
     def setup_background(self):
-        pass
+        background = clutter.Texture('background.png')
+        background.set_size(1920, 1080)
+        background.set_position(0, 0)
+        background.set_depth(2)
+        self.group.add(background)
+
+        photo = clutter.Texture('photo.jpg')
+        photo.set_size(1920, 1080)
+        photo.set_position(0, 0)
+        photo.set_depth(1)
+        self.group.add(photo)
         
     def setup(self):
         self.download_fetch_feed()
@@ -67,10 +93,14 @@ class CrimeLog(baseslide.BaseSlide):
         self.setup_text()
 
     def event_beforeshow(self):
-        self.set_entry(random.choice(self.latest_entries))
+        if not self.latest_entries:
+            self.get_latest_entries()
+        random_entry = random.choice(self.latest_entries)
+        self.set_entry(self.latest_entries.pop(self.latest_entries.index(random_entry)))
 
-    def set_entry(self, item):
-        pass
+    def set_entry(self, entry):
+        self.date_line.set_markup('%s, %s' % (entry.date.date, entry.time))
+        self.desc_block.set_markup('%s' % entry.text)
 
 class CrimeLogData:
     def __init__(self, content):
@@ -84,14 +114,18 @@ class CrimeLogData:
                 current_date = CrimeDate(line)
                 self.crime_dates.append(current_date)
             elif re.search(TIMES, line) and len(line.split()) <= 2:
-                time = CrimeTime(line)
+                time = CrimeTime(current_date, line)
                 time.text = self.content[num + 1]
-                self.crime_dates[-1].times.append(time)
+                current_date.times.append(time)
             else: continue
 
     def get_entries(self):
         self._read_data()
-        return self.crime_dates
+        entries = []
+        for date in self.crime_dates:
+            for time in date.times:
+                entries.append(time)
+        return entries
 
 class CrimeDate:
     def __init__(self, date):
@@ -99,12 +133,16 @@ class CrimeDate:
         self.times = []
 
 class CrimeTime:
-    def __init__(self, time):
+    def __init__(self, date, time):
+        self.date = date
         self.time = time
         self.text = None
 
-if __name__ == '__main__':
+app = CrimeLog()
+slide = app.group
+
+"""
     app = CrimeLog()
-    for date in app.latest_entries:
-        for time in date.times:
-            print "%s, %s -- %s\n" % (date.date, time.time, time.text)
+    for i in app.latest_entries:
+        print i.time, i.text
+"""
