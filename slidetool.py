@@ -43,6 +43,8 @@ gflags.DEFINE_string('authcookiefile', '~/.dds/authcookies.dat',
                      'Path to authcookiefile')
 gflags.DEFINE_string('baseurl', 'http://dds-dev.ccs.neu.edu/dds/',
                      'DDS Server Base URL')
+gflags.DEFINE_bool('git', True,
+                   'Whether to run \'git clean\' before bundling')
 FLAGS = gflags.FLAGS
 logging.basicConfig(level=logging.INFO)
 
@@ -251,7 +253,8 @@ def makeBundle(directory):
   try:
     logging.info('Attempting to bundle %s' % directory)
     os.chdir(directory)
-    os.system('/usr/bin/env git clean -f -x')
+    if FLAGS.git:
+      os.system('/usr/bin/env git clean -f -x')
     files = glob('*')
     if 'manifest.js' not in files:
       logging.error("no manifest file in \"%s\", aborting." % directory)
