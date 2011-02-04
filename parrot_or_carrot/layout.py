@@ -2,19 +2,23 @@ import clutter
 import baseslide
 import config
 import gobject
+from urllib import urlretrieve
+from random import choice
 
 class ParrotOrCarrot(baseslide.BaseSlide):
     def __init__(self):
         baseslide.BaseSlide.__init__(self)
-        self.zoomed = clutter.Texture('redsquare.png')
-        self.actual = clutter.Texture('glowtext.png')
+        self.zoomed_image = urllib.urlretrieve("http://parrotorcarrot.com/dds.php?n=1337&fresh=true", "/var/tmp/zoomed.jpg")
+        self.actual_image = urllib.urlretrieve("http://parrotorcarrot.com/dds.php?n=1337", "/var/tmp/actual.jpg")
+        self.zoomed = clutter.Texture('/var/tmp/zoomed.jpg')
+        self.actual = clutter.Texture('/var/tmp/actual.jpg')
 
-        self.group.add(self.redsquare)
-        self.group.add(self.malfunction)
+        self.group.add(self.zoomed)
+        self.group.add(self.actual)
         self.setupanimation()
 
     def event_beforeshow(self):
-        self.setupredsquare()
+        self.
 
     def event_aftershow(self):
         self.tm.start()
@@ -22,22 +26,22 @@ class ParrotOrCarrot(baseslide.BaseSlide):
     def event_afterhide(self):
         self.tm.stop()
 
-    def setupredsquare(self):
+    def setupzoomed(self):
         XYPOS = 173.5
-        self.redsquare.set_size(1575, 733)
-        self.redsquare.set_position(XYPOS, XYPOS)
-        self.redsquare.set_depth(1)
+        self.zoomed.set_size(1575, 733)
+        self.zoomed.set_position(XYPOS, XYPOS)
+        self.zoomed.set_depth(1)
 
-        self.malfunction.set_size(1575, 733)
-        self.malfunction.set_position(XYPOS, XYPOS)
-        self.malfunction.set_depth(3)
+        self.actual.set_size(1575, 733)
+        self.actual.set_position(XYPOS, XYPOS)
+        self.actual.set_depth(3)
 
     def setupanimation(self):
         self.tm = clutter.Timeline(duration=1200)
         self.tm.set_loop(True)
         self.alpha = clutter.Alpha(self.tm, clutter.EASE_IN_CUBIC)
         self.behaviour = clutter.BehaviourOpacity(alpha=self.alpha, opacity_start=250, opacity_end=0x33)
-        self.behaviour.apply(self.malfunction)
+        self.behaviour.apply(self.actual)
 
-app = HALfunction()
+app = ParrotOrCarrot()
 slide = app.group
