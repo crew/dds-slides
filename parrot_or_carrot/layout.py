@@ -2,6 +2,7 @@ import clutter
 import baseslide
 import config
 import gobject
+import time
 from urllib import urlretrieve
 
 class ParrotOrCarrot(baseslide.BaseSlide):
@@ -12,12 +13,10 @@ class ParrotOrCarrot(baseslide.BaseSlide):
         self.zoomed = clutter.Texture('/var/tmp/zoomed.jpg')
         self.actual = clutter.Texture('/var/tmp/actual.jpg')
 
+	self.setup_images()
         self.group.add(self.zoomed)
         self.group.add(self.actual)
         self.setup_animation()
-
-    def event_beforeshow(self):
-        self.setup_images()
 
     def event_aftershow(self):
         self.tm.start()
@@ -29,15 +28,15 @@ class ParrotOrCarrot(baseslide.BaseSlide):
         XYPOS = 173.5
         self.zoomed.set_size(1575, 733)
         self.zoomed.set_position(XYPOS, XYPOS)
-        self.zoomed.set_depth(1)
+        self.zoomed.set_depth(2)
 
         self.actual.set_size(1575, 733)
         self.actual.set_position(XYPOS, XYPOS)
         self.actual.set_depth(1)
 
     def setup_animation(self):
-        self.tm = clutter.Timeline(duration=1200)
-#        self.tm.set_loop(False)
+        self.tm = clutter.Timeline(duration=2000)
+	self.tm.set_delay(5000) 
         self.alpha = clutter.Alpha(self.tm, clutter.EASE_IN_CUBIC)
         self.behaviour = clutter.BehaviourOpacity(alpha=self.alpha, opacity_start=250, opacity_end=0)
         self.behaviour.apply(self.zoomed)
