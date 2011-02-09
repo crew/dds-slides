@@ -33,7 +33,7 @@ class ParrotOrCarrot(baseslide.BaseSlide):
 
         self.actual.set_size(1575, 733)
         self.actual.set_position(XYPOS, XYPOS)
-        self.actual.set_depth(3)
+        self.actual.set_depth(1)
 
     def setup_animation(self):
         self.tm = clutter.Timeline(duration=1200)
