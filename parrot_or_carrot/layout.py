@@ -8,6 +8,8 @@ from urllib import urlretrieve
 class ParrotOrCarrot(baseslide.BaseSlide):
     def __init__(self):
         baseslide.BaseSlide.__init__(self)
+
+    def event_beforeshow(self):
         self.zoomed_image = urlretrieve("http://parrotorcarrot.com/dds.php?rn=1337&fresh=true", "/var/tmp/zoomed.jpg")
         self.actual_image = urlretrieve("http://parrotorcarrot.com/dds.php?rn=1337", "/var/tmp/actual.jpg")
         self.zoomed = clutter.Texture('/var/tmp/zoomed.jpg')
