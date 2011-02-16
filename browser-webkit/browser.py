@@ -1,5 +1,6 @@
 #!/usr/bin/env python
-# Modification by Alex Lee <lee@ccs.neu.edu>
+# Modifications by Alex Lee <lee@ccs.neu.edu>
+#              and Nick Aldwin <nick@aldwin.us>
 # This module originated from the demos.
 #
 # Copyright (C) 2007, 2008, 2009 Jan Michael Alonzo <jmalonzo@gmai.com>
