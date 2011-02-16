@@ -219,6 +219,20 @@ class WebBrowser(gtk.Window):
         self.show_all()
         content_tabs.new_tab(url)
 
+        #hide cursor initially
+        #(it still shows up if the mouse is moved)
+        pix_data = """/* XPM */
+ static char * invisible_xpm[] = {
+ "1 1 1 1",
+ "       c None",
+ " "};"""
+        color = gtk.gdk.Color()
+        pix = gtk.gdk.pixmap_create_from_data(None,
+                                              pix_data,
+                                              1, 1, 1, color, color)
+        invisible = gtk.gdk.Cursor(pix, pix, color, color, 0, 0)
+        self.window.set_cursor(invisible)
+
     def _title_changed_cb(self, tabbed_pane, frame, title, toolbar):
         uri = frame.get_uri()
         if uri:
