@@ -13,7 +13,7 @@ class WebkitSlide(baseslide.BaseSlide):
         self.browser = None
 
     def event_beforeshow(self):
-        self.browser = browser.WebBrowser(self.url)
+        self.browser = browser.WebBrowser(self.url, show_toolbar=False)
         self.browser.fullscreen()
 
     def event_aftershow(self):

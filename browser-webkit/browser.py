@@ -202,9 +202,9 @@ class WebToolbar(gtk.Toolbar):
 
 class WebBrowser(gtk.Window):
 
-    def __init__(self, url):
+    def __init__(self, url, show_toolbar=True):
         gtk.Window.__init__(self)
-        toolbar = WebToolbar(True)
+        toolbar = WebToolbar(show_toolbar)
         content_tabs = ContentPane()
         content_tabs.connect("focus-view-title-changed",
                              self._title_changed_cb, toolbar)
