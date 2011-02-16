@@ -195,7 +195,8 @@ class WebToolbar(gtk.Toolbar):
             entry_item.show()
 
     def location_set_text(self, text):
-        self._entry.set_text(text)
+        if hasattr(self, '_entry'):
+            self._entry.set_text(text)
 
     def _entry_activate_cb(self, entry):
         self.emit("load-requested", entry.props.text)
