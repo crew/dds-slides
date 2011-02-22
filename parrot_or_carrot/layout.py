@@ -1,6 +1,5 @@
 import clutter
-import baseslide
-import config
+from crew.dds import baseslide
 import gobject
 import time
 from urllib import urlretrieve
@@ -50,7 +49,7 @@ class ParrotOrCarrot(baseslide.BaseSlide):
 
     def setup_animation(self):
         self.tm = clutter.Timeline(duration=2000)
-        self.tm.set_delay(5000) 
+        self.tm.set_delay(5000)
         self.alpha = clutter.Alpha(self.tm, clutter.EASE_IN_CUBIC)
         self.behaviour = clutter.BehaviourOpacity(alpha=self.alpha, opacity_start=250, opacity_end=0)
         self.behaviour.apply(self.zoomed)

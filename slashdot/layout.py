@@ -1,7 +1,5 @@
 import clutter
 import sys
-import feedparser
-import baseslide
 import re
 import random
 import gobject
@@ -9,6 +7,8 @@ import datetime
 import os
 import urllib
 import logging
+from crew.dds import baseslide
+from crew.dds.contrib import feedparser
 
 class SlashdotDisplay(baseslide.BaseSlide):
   def __init__(self, feedURL):
@@ -138,7 +138,7 @@ class SlashdotDisplay(baseslide.BaseSlide):
 
     top_story_id = random.randint(0, len(self.item_positions)-1)
     top_entry = self.rssfeed.entries[top_story_id]
-    top_story_y = self.item_positions[top_story_id]   
+    top_story_y = self.item_positions[top_story_id]
     self.slider.set_position(945, top_story_y-12)
     self.addTopStory(self.RemoveHTMLTags(top_entry.title),
                      self.RemoveHTMLTags(top_entry.summary))

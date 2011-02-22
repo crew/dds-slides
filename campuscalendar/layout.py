@@ -1,8 +1,7 @@
 # vim: set shiftwidth=4 tabstop=4 softtabstop=4 :
 import clutter
 import cairo
-import baseslide
-import config
+from crew.dds import baseslide
 import logging
 import urllib
 import datetime

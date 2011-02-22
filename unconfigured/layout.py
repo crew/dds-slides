@@ -1,7 +1,6 @@
 import clutter
-import baseslide
-import config
 import gobject
+from crew.dds import baseslide, config
 
 class Unconfigured(baseslide.BaseSlide):
     def __init__(self):

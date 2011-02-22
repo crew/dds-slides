@@ -1,10 +1,9 @@
 # vim: set shiftwidth=4 tabstop=4 softtabstop=4 :
 # adaptation of the normal campuscalendar slide to handle some
 # announcement-type things
+
 import clutter
 import cairo
-import baseslide
-import config
 import logging
 import urllib
 import datetime
@@ -12,6 +11,7 @@ import random
 import vobject
 import pytz
 import json
+from crew.dds import baseslide
 
 class CampusCalendar(baseslide.BaseSlide):
     def __init__(self):

@@ -1,6 +1,6 @@
 import clutter
 import logging
-import baseslide
+from crew.dds import baseslide
 
 # Color ot title text
 TITLE_COLOR = "#FFFFFF"

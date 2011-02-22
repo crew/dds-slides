@@ -2,11 +2,11 @@ import cairo
 import pango
 import clutter
 import sys
-import baseslide
 import logging
 import urllib
 import json
 from datetime import timedelta
+from crew.dds import baseslide
 
 SCREEN_HEIGHT = 1200
 SCREEN_WIDTH = 1920
@@ -83,6 +83,6 @@ class UTDisplay(baseslide.BaseSlide):
     self.group.add(rowContainer)
 
 # The bot generating the json lives here
-# The code is in crew-misc 
+# The code is in crew-misc
 app = UTDisplay("http://login.ccs.neu.edu:8099/")
 slide = app.group

@@ -1,6 +1,6 @@
 import clutter
 import logging
-import baseslide
+from crew.dds import baseslide
 
 class PitcamSlide(baseslide.BaseSlide):
   def __init__ (self):

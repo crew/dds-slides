@@ -1,9 +1,8 @@
 import logging
 import threading
 import clutter
-import baseslide
-import browser
-
+from crew.dds import baseslide
+from crew.dds.contrib import browser
 
 class WebkitSlide(baseslide.BaseSlide):
 

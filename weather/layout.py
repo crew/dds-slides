@@ -1,9 +1,9 @@
 import clutter
 import sys
-import baseslide
 import logging
-import pywapi
 import os
+from crew.dds import baseslide
+from crew.dds.contrib import pywapi
 
 class WeatherDisplay(baseslide.BaseSlide):
   def __init__(self, location):
@@ -63,7 +63,7 @@ class WeatherDisplay(baseslide.BaseSlide):
     self.group.add(feedtitleActor)
 
     feedtemp = clutter.Text()
-    feedtemp.set_text(weather['current_conditions']['condition'] + 
+    feedtemp.set_text(weather['current_conditions']['condition'] +
       ' ' + weather['current_conditions']['temp_f'] + "F")
     feedtemp.set_font_name("serif 48")
     feedtemp.set_color(clutter.color_from_string("white"))

@@ -6,10 +6,9 @@ Docs: http://python-twitter.googlecode.com/hg/doc/twitter.html
 '''
 
 import clutter
-import baseslide
-import config
 import gobject
 import twitter
+from crew.dds import baseslide
 
 class TwitterDisplay(baseslide.BaseSlide):
     def __init__(self):

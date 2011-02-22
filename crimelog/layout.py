@@ -6,13 +6,13 @@ A slide for the NUPD Crime Log.
 
 import os
 import re
-import baseslide
 import clutter
 import logging
-import feedparser
 import datetime
 import urllib
 import random
+from crew.dds import baseslide
+from crew.dds.contrib import feedparser
 
 WEEKDAYS = ('Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday')
 TIMES = re.compile('a\.*m\.*$|p\.*m\.*$|[nN]oon\.*$')
@@ -24,7 +24,7 @@ class CrimeLog(baseslide.BaseSlide):
         self.rss_feed = None
         self.latest_entries = None
         self.setup()
-    
+
     def feed_path(self):
         return os.path.join(os.path.dirname(__file__), 'crime.rss')
 
@@ -85,7 +85,7 @@ class CrimeLog(baseslide.BaseSlide):
         photo.set_position(0, 0)
         photo.set_depth(1)
         self.group.add(photo)
-        
+
     def setup(self):
         self.download_fetch_feed()
         self.get_latest_entries()
@@ -106,7 +106,7 @@ class CrimeLogData:
     def __init__(self, content):
         self.content = content
         self.crime_dates = []
-    
+
     def _read_data(self):
         current_date = None
         for num, line in enumerate(self.content):

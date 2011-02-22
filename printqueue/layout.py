@@ -2,11 +2,11 @@ import cairo
 import pango
 import clutter
 import sys
-import baseslide
 import logging
 import urllib
 import json
 import re
+from crew.dds import baseslide
 
 SCREEN_HEIGHT = 1200
 SCREEN_WIDTH = 1920

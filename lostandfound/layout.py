@@ -1,8 +1,6 @@
 import clutter
-import baseslide
-import config
 import gobject
-
+from crew.dds import baseslide
 
 class LostAndFound(baseslide.BaseSlide):
 

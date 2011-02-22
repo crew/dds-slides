@@ -1,20 +1,19 @@
 # vim: set shiftwidth=4 tabstop=4 softtabstop=4 :
 import clutter
-import baseslide
-import config
 import logging
 import urllib2
 import datetime
 import random
 import xml.dom.minidom
+from crew.dds import baseslide
 
 # command=predictions gets us a list of predicted arrival times
 # a=mbta specifies the MBTA as opposed to other transit services
 # stopId=5139 specifies the Huntington & Forsyth stop
 # routeTag=39 shows only 39 data related to the 39 bus
 # Docs on URIs: http://www.eot.state.ma.us/developers/downloads/MBTA_XML_Feed_Trial_Docs_13Nov09.pdf
-Mbta_39_URI = 'http://webservices.nextbus.com/service/publicXMLFeed?command='
-            + 'predictions&a=mbta&stopId=51391&routeTag=39'
+Mbta_39_URI = 'http://webservices.nextbus.com/service/publicXMLFeed?command=' + \
+              'predictions&a=mbta&stopId=51391&routeTag=39'
 
 class ACMCalendar(baseslide.BaseSlide):
     def __init__(self):
@@ -34,7 +33,7 @@ class ACMCalendar(baseslide.BaseSlide):
         for stop in stops:
             minutes_to = map(lambda x: x.getAttribute('mintues'),
                             stop.getElementsByTagName('predictions'))
-            
+
 
 
     def setupbg(self):

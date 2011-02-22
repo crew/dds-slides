@@ -2,12 +2,12 @@ import cairo
 import pango
 import clutter
 import sys
-import baseslide
 import logging
 import urllib
 import json
 import re
 from time import localtime,strftime,time
+from crew.dds import baseslide
 
 SCREEN_HEIGHT = 1200
 SCREEN_WIDTH = 1920
@@ -150,7 +150,7 @@ class IRCDisplay(baseslide.BaseSlide):
 
     for row in self.rows:
       rowContainer.add(row)
-      
+
     self.group.add(rowContainer)
 
 # the bot generating the json lives here
