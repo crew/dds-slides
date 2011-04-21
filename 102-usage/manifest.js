@@ -4,5 +4,6 @@
     "mode": "module",
     "title": "",
     "duration": 20,
-    "priority": 1
+    "priority": 1,
+    "thumbnail_img": "_thumb.png"
 }
